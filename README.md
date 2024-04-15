@@ -24,6 +24,9 @@ After setting up your passport clientId and redirect variables, make sure that y
 ## Gotchas
 In order to build for production, a package `jsbi` had to be installed to support one of the dependencies. The alias had to be added to the resovle section of the `vite.config.ts` file.
 
+## Deployment in Vercel
+A `vercel.json` file has been added to help configure for deployments in Vercel. This is not neccessary if you are not deploying to Vercel. It is re-writing all routes back to the index.html file to make the React Router work correctly.
+
 ## Vite details
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
