@@ -54,11 +54,11 @@ function App({passportInstance}: {passportInstance: passport.Passport}) {
 
   return (
     <div id="app">
-      {!userInfo && <PassportButton onClick={login} />}
+      {!userInfo && <PassportButton title="Sign in with Immutable" onClick={login} />}
       {userInfo && (
         <>
         <div className='user-info'>
-          <button onClick={logout}>Logout</button>
+          <PassportButton title="Logout" onClick={logout} />
           <div className='user-info-row'><strong>Id:</strong><p>{userInfo.sub}</p></div>
           <div className='user-info-row'><strong>Email:</strong><p>{userInfo.email}</p></div>
           {walletAddress && <div className='user-info-row'><strong>Wallet:</strong><p>{walletAddress}</p></div>}
