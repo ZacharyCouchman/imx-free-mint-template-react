@@ -21,7 +21,10 @@ In the .env file, replace all of the variables with your own project variables f
 ## Passport login flow
 After setting up your passport clientId and redirect variables, make sure that you have a route to handle the redirect. The component at this route should use the passport instance to call `loginCallback()`. See PassportRedirect component and how it is added to the React Router in main.tsx.
 
-## Vite
+## Gotchas
+In order to build for production, a package `jsbi` had to be installed to support one of the dependencies. The alias had to be added to the resovle section of the `vite.config.ts` file.
+
+## Vite details
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
