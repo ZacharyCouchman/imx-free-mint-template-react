@@ -8,11 +8,13 @@ interface ImxBalance {
   provider: Provider;
 }
 function ImxBalance({address, provider}: ImxBalance) {
-  const {formattedBalance} = useImxBalance(provider, address);
+  const {loading, formattedBalance} = useImxBalance(provider, address);
 
   function copyAddress() {
     navigator.clipboard.writeText(address);
   }
+
+  if(loading) return <></>;
 
   return (
     <div className="imx-balance">
