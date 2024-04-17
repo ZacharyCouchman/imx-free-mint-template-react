@@ -10,8 +10,8 @@ interface ImxBalance {
 function ImxBalance({address, provider}: ImxBalance) {
   const {loading, formattedBalance} = useImxBalance(provider, address);
 
-  function copyAddress() {
-    navigator.clipboard.writeText(address);
+  function goToExplorer() {
+    window.open(`https://explorer.testnet.immutable.com/address/${address}`, '_blank');
   }
 
   if(loading) return <></>;
@@ -21,7 +21,7 @@ function ImxBalance({address, provider}: ImxBalance) {
       <img src="https://checkout-cdn.immutable.com/v1/blob/img/tokens/imx.svg" height={40} />
       <div className="balance-info">
         <strong>{formattedBalance.substring(0,10)}</strong>
-        <p className="wallet-address-copy" onClick={copyAddress}>{shortenAddress(address)}</p>
+        <p className="wallet-address-copy" onClick={goToExplorer}>{shortenAddress(address)}</p>
         </div>
     </div>
   )

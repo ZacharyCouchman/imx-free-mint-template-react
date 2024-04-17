@@ -17,7 +17,3 @@
 .wallet-address-copy:hover {
   color: lightgray;
 }
-
-.wallet-address-copy:active {
-  color: lightgreen;
-}
