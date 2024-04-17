@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
-import PassportRedirect from './components/PassportRedirect.tsx'
-import { passportInstance } from './utils/passport.ts'
+import PassportRedirect from './routes/PassportRedirect.tsx'
+import { passportInstance } from './immutable/passport.ts'
 
 const router = createBrowserRouter([
   {

@@ -1,4 +1,4 @@
-import PassportSymbol from '../assets/passport_logo_32px.svg?react';
+import PassportSymbol from '../../assets/passport_logo_32px.svg?react';
 import './PassportButton.css';
 
 interface PassportButton {

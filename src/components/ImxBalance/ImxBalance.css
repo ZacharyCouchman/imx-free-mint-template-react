@@ -1,0 +1,23 @@
+.imx-balance {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.balance-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.wallet-address-copy {
+  color: white;
+  cursor: pointer;
+}
+
+.wallet-address-copy:hover {
+  color: lightgray;
+}
+
+.wallet-address-copy:active {
+  color: lightgreen;
+}

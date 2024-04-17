@@ -1,13 +1,14 @@
 import { passport } from '@imtbl/sdk'
 import { useEffect, useState } from 'react'
 import { Provider, UserProfile } from '@imtbl/sdk/passport';
-import { PassportButton } from './components/PassportButton';
-import { parseJwt } from './utils/passport';
+import { PassportButton } from './components/PassportButton/PassportButton';
+import { parseJwt } from './utils/jwt';
 import './App.css'
+import ImxBalance from './components/ImxBalance/ImxBalance';
 
 function App({passportInstance}: {passportInstance: passport.Passport}) {
   const [userInfo, setUserInfo] = useState<UserProfile>();
-  const [walletAddress, setWalletAddress] = useState<string>();
+  const [walletAddress, setWalletAddress] = useState<string>('');
 
   // Providers to use for Immmutable zkEVM and ImmutableX
   const [zkEVMProvider, setZkEVMProvider] = useState<Provider>();
@@ -54,21 +55,13 @@ function App({passportInstance}: {passportInstance: passport.Passport}) {
 
   return (
     <div id="app">
-      {!userInfo && <PassportButton title="Sign in with Immutable" onClick={login} />}
-      {userInfo && (
-        <>
-        <div className='user-info'>
-          <PassportButton title="Logout" onClick={logout} />
-          <div className='user-info-row'><strong>Id:</strong><p>{userInfo.sub}</p></div>
-          <div className='user-info-row'><strong>Email:</strong><p>{userInfo.email}</p></div>
-          {walletAddress && <div className='user-info-row'><strong>Wallet:</strong><p>{walletAddress}</p></div>}
-        </div>
-        <div className='docs-link-container'>
-          <a href='https://docs.immutable.com/docs/zkEVM/products/passport' target='_blank'>Immutable zkEVM Docs</a>
-          <a href='https://docs.immutable.com/docs/x/passport' target='_blank'>Immutable X Docs</a>
-        </div>
-        </>
-      )}
+      <div className='header'>
+        {!userInfo && <PassportButton title="Sign in with Immutable" onClick={login} />}
+        {userInfo && <div className='logout'>
+          <ImxBalance provider={zkEVMProvider!} address={walletAddress} />
+          <button onClick={logout}>Logout</button>
+        </div>}
+      </div>
     </div>
   )
 }
