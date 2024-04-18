@@ -1,9 +1,22 @@
 import { Environment } from "@imtbl/sdk/x";
 
-export const applicationEnvironment = Environment.SANDBOX;
+export const applicationEnvironment = Environment.PRODUCTION;
 
-export const immutablePublishableKey: string = import.meta.env.VITE_IMMUTABLE_PUBLISHABLE_KEY;
+const config = {
+  [Environment.SANDBOX]: {
+    immutablePublishableKey: import.meta.env.VITE_SANDBOX_IMMUTABLE_PUBLISHABLE_KEY,
+    passportClientId: import.meta.env.VITE_SANDBOX_PASSPORT_CLIENT_ID,
+    passportRedirectUri: import.meta.env.VITE_SANDBOX_PASSPORT_LOGIN_REDIRECT_URI,
+    passportLogoutRedirectUri: import.meta.env.VITE_SANDBOX_PASSPORT_LOGOUT_REDIRECT_URI,
+    explorerUrl: "https://explorer.testnet.immutable.com",
+  },
+  [Environment.PRODUCTION]: {
+    immutablePublishableKey: import.meta.env.VITE_MAINNET_IMMUTABLE_PUBLISHABLE_KEY,
+    passportClientId: import.meta.env.VITE_MAINNET_PASSPORT_CLIENT_ID,
+    passportRedirectUri: import.meta.env.VITE_MAINNET_PASSPORT_LOGIN_REDIRECT_URI,
+    passportLogoutRedirectUri: import.meta.env.VITE_MAINNET_PASSPORT_LOGOUT_REDIRECT_URI,
+    explorerUrl: "https://explorer.immutable.com",
+  },
+};
 
-export const passportClientId: string = import.meta.env.VITE_PASSPORT_CLIENT_ID;
-export const passportRedirectUri: string = import.meta.env.VITE_PASSPORT_LOGIN_REDIRECT_URI;
-export const passportLogoutRedirectUri: string = import.meta.env.VITE_PASSPORT_LOGOUT_REDIRECT_URI;
+export default config;

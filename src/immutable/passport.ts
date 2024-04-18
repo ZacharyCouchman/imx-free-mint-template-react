@@ -1,22 +1,12 @@
 import { passport } from "@imtbl/sdk";
 import { ImmutableConfiguration } from "@imtbl/sdk/x";
-import {
-  applicationEnvironment,
-  immutablePublishableKey,
-  passportClientId,
-  passportRedirectUri,
-  passportLogoutRedirectUri
-} from "../config/config";
+import config, { applicationEnvironment } from "../config/config"; // Create Passport instance once
 
-// Create Passport instance once
 export const passportInstance = new passport.Passport({
-  baseConfig: new ImmutableConfiguration({
-    environment: applicationEnvironment,
-    publishableKey: immutablePublishableKey
-  }),
-  clientId: passportClientId,
-  redirectUri: passportRedirectUri,
-  logoutRedirectUri: passportLogoutRedirectUri,
-  audience: 'platform_api',
-  scope: 'openid offline_access email transact',
+  baseConfig: new ImmutableConfiguration({ environment: applicationEnvironment, publishableKey: config[applicationEnvironment].immutablePublishableKey }),
+  clientId: config[applicationEnvironment].passportClientId,
+  redirectUri: config[applicationEnvironment].passportRedirectUri,
+  logoutRedirectUri: config[applicationEnvironment].passportLogoutRedirectUri,
+  audience: "platform_api",
+  scope: "openid offline_access email transact",
 });

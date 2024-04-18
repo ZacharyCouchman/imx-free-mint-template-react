@@ -1,8 +1,8 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import { nodePolyfills } from 'vite-plugin-node-polyfills'
-import svgr from 'vite-plugin-svgr'
-import path from 'path'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import { nodePolyfills } from "vite-plugin-node-polyfills";
+import svgr from "vite-plugin-svgr";
+import path from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -19,21 +19,21 @@ export default defineConfig({
     // }),
     nodePolyfills({
       globals: {
-        Buffer: false
-      }
-    })
+        Buffer: false,
+      },
+    }),
   ],
   server: {
-    port: 5174
+    port: 5174,
   },
   define: {
-    'process.env': {},
-    'process.version': '""',
-    'global': {}
+    "process.env": {},
+    "process.version": '""',
+    global: {},
   },
   resolve: {
     alias: {
-      'jsbi': path.resolve(__dirname, './node_modules/jsbi'),
-    }
-  }
-})
+      jsbi: path.resolve(__dirname, "./node_modules/jsbi"),
+    },
+  },
+});
