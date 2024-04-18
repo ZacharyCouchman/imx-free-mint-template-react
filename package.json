@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@imtbl/sdk": "^1.28.2",
+    "@imtbl/sdk": "^1.28.4",
     "bignumber.js": "^4.0.4",
     "buffer": "^6.0.3",
     "jsbi": "^3.2.5",

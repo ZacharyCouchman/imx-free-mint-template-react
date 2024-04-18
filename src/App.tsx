@@ -1,14 +1,14 @@
-import { passport } from '@imtbl/sdk'
-import { useEffect, useState } from 'react'
-import { Provider, UserProfile } from '@imtbl/sdk/passport';
-import { PassportButton } from './components/PassportButton/PassportButton';
-import { parseJwt } from './utils/jwt';
-import './App.css'
-import ImxBalance from './components/ImxBalance/ImxBalance';
+import { passport } from "@imtbl/sdk";
+import { useEffect, useState } from "react";
+import { Provider, UserProfile } from "@imtbl/sdk/passport";
+import { PassportButton } from "./components/PassportButton/PassportButton";
+import { parseJwt } from "./utils/jwt";
+import "./App.css";
+import ImxBalance from "./components/ImxBalance/ImxBalance";
 
-function App({passportInstance}: {passportInstance: passport.Passport}) {
+function App({ passportInstance }: { passportInstance: passport.Passport }) {
   const [userInfo, setUserInfo] = useState<UserProfile>();
-  const [walletAddress, setWalletAddress] = useState<string>('');
+  const [walletAddress, setWalletAddress] = useState<string>("");
 
   // Providers to use for Immmutable zkEVM and ImmutableX
   const [zkEVMProvider, setZkEVMProvider] = useState<Provider>();
@@ -20,50 +20,57 @@ function App({passportInstance}: {passportInstance: passport.Passport}) {
 
     // create ImxProvider to use Passport with ImmutableX
     // passportInstance.connectImx().then((imxProvider) => setImxProvider(imxProvider))
-    
   }, [passportInstance]);
 
-  async function login(){
-    try{
-      await zkEVMProvider?.request({ method: 'eth_requestAccounts' });
-    } catch(err) {
+  async function login() {
+    try {
+      await zkEVMProvider?.request({ method: "eth_requestAccounts" });
+    } catch (err) {
       console.log("Failed to login");
       console.error(err);
     }
 
-    try{
+    try {
       const userProfile = await passportInstance.getUserInfo();
-      setUserInfo(userProfile)
-    } catch(err) {
+      setUserInfo(userProfile);
+    } catch (err) {
       console.log("Failed to fetch user info");
       console.error(err);
     }
 
-    try{
+    try {
       const idToken = await passportInstance.getIdToken();
+      console.log(idToken);
       const parsedIdToken = parseJwt(idToken!);
-      setWalletAddress(parsedIdToken.passport.imx_eth_address)
-    } catch(err) {
+      console.log(parsedIdToken);
+      console.log("parsing ID token");
+      console.log(`wallet address: ${parsedIdToken.passport.zkevm_eth_address}`);
+      setWalletAddress(parsedIdToken.passport.zkevm_eth_address);
+    } catch (err) {
       console.log("Failed to fetch idToken");
       console.error(err);
     }
   }
 
-  function logout(){
-    passportInstance.logout();
+  async function logout() {
+    console.log("logout attempted");
+    const result = passportInstance.logout();
+    console.log(result);
   }
 
   return (
     <div id="app">
-      <div className='header'>
+      <div className="header">
         {!userInfo && <PassportButton title="Sign in with Immutable" onClick={login} />}
-        {userInfo && <div className='logout'>
-          <ImxBalance provider={zkEVMProvider!} address={walletAddress} />
-          <button onClick={logout}>Logout</button>
-        </div>}
+        {userInfo && (
+          <div className="logout">
+            <ImxBalance provider={zkEVMProvider!} address={walletAddress} />
+            <button onClick={logout}>Logout</button>
+          </div>
+        )}
       </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
