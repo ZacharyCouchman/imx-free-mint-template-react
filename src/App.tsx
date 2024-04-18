@@ -67,6 +67,7 @@ function App({ passportInstance }: { passportInstance: passport.Passport }) {
   function openWalletBalances() {
     wallet!.mount('widget-target');
     wallet?.addListener(WalletEventType.DISCONNECT_WALLET, () => {
+      wallet.unmount();
       logout();
     })
     wallet!.addListener(OrchestrationEventType.REQUEST_BRIDGE, (data: RequestBridgeEvent) => {

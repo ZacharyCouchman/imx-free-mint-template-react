@@ -1,6 +1,8 @@
 import { Environment } from "@imtbl/sdk/x";
 
-export const applicationEnvironment = Environment.PRODUCTION;
+export const applicationEnvironment = import.meta.env.VITE_IMMUTABLE_ENVIRONMENT === Environment.PRODUCTION
+  ? Environment.PRODUCTION
+  : Environment.SANDBOX
 
 const config = {
   [Environment.SANDBOX]: {
