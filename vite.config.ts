@@ -9,14 +9,6 @@ export default defineConfig({
   plugins: [
     react(),
     svgr(),
-    // nodePolyfills({
-    //   include: ['assert', 'events', 'buffer', 'crypto', 'https', 'os', 'stream'],
-    //   globals: {
-    //     Buffer: false,
-    //     global: true,
-    //     process: true,
-    //   },
-    // }),
     nodePolyfills({
       globals: {
         Buffer: false,

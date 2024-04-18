@@ -13,6 +13,7 @@
     "@imtbl/sdk": "^1.28.4",
     "bignumber.js": "^4.0.4",
     "buffer": "^6.0.3",
+    "ethers": "^5.7.2",
     "jsbi": "^3.2.5",
     "localforage": "^1.10.0",
     "match-sorter": "^6.3.4",

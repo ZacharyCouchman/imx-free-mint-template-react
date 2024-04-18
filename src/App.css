@@ -18,6 +18,13 @@
   align-items: center;
 }
 
+.widget-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
 .logout {
   display: flex;
   align-items: center;
