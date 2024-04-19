@@ -7,7 +7,7 @@ import "./App.css";
 import ImxBalance from "./components/ImxBalance/ImxBalance";
 import { CheckoutContext } from "./contexts/CheckoutContext";
 import { OrchestrationEventType, RequestBridgeEvent, RequestOnrampEvent, RequestSwapEvent, WalletEventType } from "@imtbl/sdk/checkout";
-import { Web3Provider } from '@ethersproject/providers';
+import { Web3Provider } from "@ethersproject/providers";
 
 function App({ passportInstance }: { passportInstance: passport.Passport }) {
   const [userInfo, setUserInfo] = useState<UserProfile>();
@@ -17,7 +17,10 @@ function App({ passportInstance }: { passportInstance: passport.Passport }) {
   const [zkEVMProvider, setZkEVMProvider] = useState<Provider>();
   // const [imxProvider, setImxProvider] = useState<IMXProvider>();
 
-  const {widgets: {wallet, bridge, swap, onramp}, widgetsFactory} = useContext(CheckoutContext);
+  const {
+    widgets: { wallet, bridge, swap, onramp },
+    widgetsFactory,
+  } = useContext(CheckoutContext);
 
   useEffect(() => {
     // create zkEVMProvider to use Passport with Immutable zkEVM
@@ -57,7 +60,7 @@ function App({ passportInstance }: { passportInstance: passport.Passport }) {
     }
 
     // inject Passport's zkEVM provider into widgets using the widgetFactory.updateProvider
-    widgetsFactory?.updateProvider(new Web3Provider(zkEVMProvider!))
+    widgetsFactory?.updateProvider(new Web3Provider(zkEVMProvider!));
   }
 
   function logout() {
@@ -65,23 +68,23 @@ function App({ passportInstance }: { passportInstance: passport.Passport }) {
   }
 
   function openWalletBalances() {
-    wallet!.mount('widget-target');
+    wallet!.mount("widget-target");
     wallet?.addListener(WalletEventType.DISCONNECT_WALLET, () => {
       wallet.unmount();
       logout();
-    })
+    });
     wallet!.addListener(OrchestrationEventType.REQUEST_BRIDGE, (data: RequestBridgeEvent) => {
       wallet?.unmount();
-      bridge?.mount('widget-target', {...data})
-    })
+      bridge?.mount("widget-target", { ...data });
+    });
     wallet!.addListener(OrchestrationEventType.REQUEST_SWAP, (data: RequestSwapEvent) => {
       wallet?.unmount();
-      swap?.mount('widget-target', {...data})
-    })
+      swap?.mount("widget-target", { ...data });
+    });
     wallet!.addListener(OrchestrationEventType.REQUEST_ONRAMP, (data: RequestOnrampEvent) => {
       wallet?.unmount();
-      onramp?.mount('widget-target', {...data})
-    })
+      onramp?.mount("widget-target", { ...data });
+    });
   }
 
   return (
@@ -93,11 +96,12 @@ function App({ passportInstance }: { passportInstance: passport.Passport }) {
             <ImxBalance provider={zkEVMProvider!} address={walletAddress} />
             <button onClick={openWalletBalances}>Balances</button>
             <button onClick={logout}>Logout</button>
+            <button>Free Mint</button>
           </div>
         )}
       </div>
       <div className="widget-container">
-        <div id="widget-target"/>
+        <div id="widget-target" />
       </div>
     </div>
   );
