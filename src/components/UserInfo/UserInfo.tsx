@@ -1,27 +1,52 @@
-import "./UserInfo.css"
+// UserInfo.tsx
+import { Box, Flex, Text } from '@chakra-ui/react';
 
-interface UserInfo {
+interface UserInfoProps {
   id: string;
   email: string;
   walletAddress: string;
 }
 
-export default function UserInfo({
+function UserInfo({
   id,
   email,
   walletAddress
-}: UserInfo) {
+}: UserInfoProps) {
   return (
-    <div className='user-info'>
-      <div className='user-info-row'><strong>Id:</strong><p>{id}</p></div>
-      <div className='user-info-row'><strong>Email:</strong><p>{email}</p></div>
-      {walletAddress && <div className='user-info-row'><strong>Wallet:</strong><p>{walletAddress}</p></div>}
-    </div>
-  )
+    <Box 
+      className='user-info' 
+      width="550px" 
+      padding="12px" 
+      borderRadius="12px" 
+      border="0.5px solid lightgray" 
+      wordBreak="break-all" 
+      textAlign="left" 
+      fontSize="md"
+    >
+      <UserInfoRow label="Id:" value={id} />
+      <UserInfoRow label="Email:" value={email} />
+      {walletAddress && <UserInfoRow label="Wallet:" value={walletAddress} />}
+    </Box>
+  );
 }
 
+interface UserInfoRowProps {
+  label: string;
+  value: string;
+}
 
-{/* <div className='docs-link-container'>
-        <a href='https://docs.immutable.com/docs/zkEVM/products/passport' target='_blank'>Immutable zkEVM Docs</a>
-        <a href='https://docs.immutable.com/docs/x/passport' target='_blank'>Immutable X Docs</a>
-      </div> */}
+function UserInfoRow({ label, value }: UserInfoRowProps) {
+  return (
+    <Flex 
+      direction="row" 
+      justify="space-between" 
+      align="center" 
+      width="100%"
+    >
+      <Text fontWeight="bold">{label}</Text>
+      <Text>{value}</Text>
+    </Flex>
+  );
+}
+
+export default UserInfo;

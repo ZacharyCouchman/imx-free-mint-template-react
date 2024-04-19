@@ -1,9 +1,10 @@
+// App.tsx
+import { Box, Button, VStack, HStack } from '@chakra-ui/react';
 import { passport } from "@imtbl/sdk";
 import { useContext, useEffect, useState } from "react";
 import { Provider, UserProfile } from "@imtbl/sdk/passport";
 import { PassportButton } from "./components/PassportButton/PassportButton";
 import { parseJwt } from "./utils/jwt";
-import "./App.css";
 import ImxBalance from "./components/ImxBalance/ImxBalance";
 import { CheckoutContext } from "./contexts/CheckoutContext";
 import { OrchestrationEventType, RequestBridgeEvent, RequestOnrampEvent, RequestSwapEvent, WalletEventType } from "@imtbl/sdk/checkout";
@@ -12,11 +13,7 @@ import { Web3Provider } from '@ethersproject/providers';
 function App({ passportInstance }: { passportInstance: passport.Passport }) {
   const [userInfo, setUserInfo] = useState<UserProfile>();
   const [walletAddress, setWalletAddress] = useState<string>("");
-
-  // Providers to use for Immmutable zkEVM and ImmutableX
   const [zkEVMProvider, setZkEVMProvider] = useState<Provider>();
-  // const [imxProvider, setImxProvider] = useState<IMXProvider>();
-
   const {widgets: {wallet, bridge, swap, onramp}, widgetsFactory} = useContext(CheckoutContext);
 
   useEffect(() => {
@@ -85,21 +82,22 @@ function App({ passportInstance }: { passportInstance: passport.Passport }) {
   }
 
   return (
-    <div id="app">
-      <div className="header">
-        {!userInfo && <PassportButton title="Sign in with Immutable" onClick={login} />}
-        {userInfo && (
-          <div className="logout">
-            <ImxBalance provider={zkEVMProvider!} address={walletAddress} />
-            <button onClick={openWalletBalances}>Balances</button>
-            <button onClick={logout}>Logout</button>
-          </div>
-        )}
-      </div>
-      <div className="widget-container">
-        <div id="widget-target"/>
-      </div>
-    </div>
+    <Box id="app" minW="100vw" minH="100vh" display="flex" flexDirection="column">
+    <Box className="header" h="64px" px={4} display="flex" justifyContent="flex-end" alignItems="center">
+      {!userInfo ? (
+        <PassportButton title="Sign in with Immutable" onClick={login} />
+      ) : (
+        <HStack className="logout">
+          <ImxBalance provider={zkEVMProvider!} address={walletAddress} />
+          <Button onClick={openWalletBalances}>Balances</Button>
+          <Button onClick={logout}>Logout</Button>
+        </HStack>
+      )}
+    </Box>
+    <VStack className="widget-container" align="center" justify="center">
+      <Box id="widget-target"/>
+    </VStack>
+  </Box>
   );
 }
 
