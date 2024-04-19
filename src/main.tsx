@@ -2,7 +2,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import { ChakraProvider } from '@chakra-ui/react';
+import { ChakraProvider, ColorModeScript } from '@chakra-ui/react';
 import theme from './theme';  // Import the theme you created
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import PassportRedirect from './routes/PassportRedirect';
@@ -25,6 +25,7 @@ const root = ReactDOM.createRoot(document.getElementById('root')!);
 
 root.render(
   <React.StrictMode>
+    <ColorModeScript initialColorMode={theme.config.initialColorMode} />
     <ChakraProvider theme={theme}>
       <CheckoutProvider checkout={checkoutInstance}>
         <RouterProvider router={router} />

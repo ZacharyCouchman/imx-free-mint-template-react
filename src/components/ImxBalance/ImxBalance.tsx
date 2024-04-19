@@ -39,23 +39,23 @@ function ImxBalance({ address, provider }: ImxBalanceProps) {
   if (loading) return null;  // Render nothing if loading
 
   return (
-    <Flex align="center" gap="2">
-      <Image src="https://checkout-cdn.immutable.com/v1/blob/img/tokens/imx.svg" height="40px" />
+    <Flex align="center" gap="2" paddingX={3}>
+      <Image src="https://checkout-cdn.immutable.com/v1/blob/img/tokens/imx.svg" height="20px" />
       <Box flexDir="column">
-        <Text fontSize="lg" fontWeight="bold">{formattedBalance.substring(0, 10)}</Text>
+        <Text fontWeight="bold">{formattedBalance.substring(0, 10)}</Text>
         <Flex align="center">
-          <Text color="white" mr="2" cursor="pointer" onClick={goToExplorer}>
+          <Text mr="2" cursor="pointer" onClick={goToExplorer}>
             {shortenAddress(address)}
           </Text>
 
         </Flex>
       </Box>
       <IconButton
-            icon={<CopyIcon />}
-            size="sm"
-            aria-label="Copy address"
-            onClick={handleCopy}
-          />
+        icon={<CopyIcon />}
+        size="sm"
+        aria-label="Copy address"
+        onClick={handleCopy}
+      />
     </Flex>
   );
 }

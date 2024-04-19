@@ -12,10 +12,13 @@
   "dependencies": {
     "@chakra-ui/icons": "^2.1.1",
     "@chakra-ui/react": "^2.8.2",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
     "@imtbl/sdk": "^1.28.6",
     "bignumber.js": "^4.0.4",
     "buffer": "^6.0.3",
     "ethers": "^5.7.2",
+    "framer-motion": "^10.18.0",
     "jsbi": "^3.2.5",
     "localforage": "^1.10.0",
     "match-sorter": "^6.3.4",

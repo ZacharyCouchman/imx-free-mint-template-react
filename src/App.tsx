@@ -1,20 +1,25 @@
 // App.tsx
-import { Box, Button, VStack, HStack } from '@chakra-ui/react';
+import { Box, Button, Menu, MenuButton, MenuList, MenuItem, Flex, Text, useDisclosure, theme, MenuDivider } from '@chakra-ui/react';
 import { passport } from "@imtbl/sdk";
 import { useContext, useEffect, useState } from "react";
 import { Provider, UserProfile } from "@imtbl/sdk/passport";
 import { PassportButton } from "./components/PassportButton/PassportButton";
 import { parseJwt } from "./utils/jwt";
-import ImxBalance from "./components/ImxBalance/ImxBalance";
 import { CheckoutContext } from "./contexts/CheckoutContext";
-import { OrchestrationEventType, RequestBridgeEvent, RequestOnrampEvent, RequestSwapEvent, WalletEventType } from "@imtbl/sdk/checkout";
+import { WidgetType } from "@imtbl/sdk/checkout";
 import { Web3Provider } from '@ethersproject/providers';
+import { ChevronDownIcon } from '@chakra-ui/icons';
+import { shortenAddress } from './utils/walletAddress';
+import WidgetModal from './components/WidgetModal/WidgetModal';
+import ImxBalance from './components/ImxBalance/ImxBalance';
 
 function App({ passportInstance }: { passportInstance: passport.Passport }) {
   const [userInfo, setUserInfo] = useState<UserProfile>();
   const [walletAddress, setWalletAddress] = useState<string>("");
   const [zkEVMProvider, setZkEVMProvider] = useState<Provider>();
-  const {widgets: {wallet, bridge, swap, onramp}, widgetsFactory} = useContext(CheckoutContext);
+  const {widgetsFactory} = useContext(CheckoutContext);
+  const [selectedWidget, setSelectedWidget] = useState(WidgetType.WALLET);
+  const {isOpen, onOpen, onClose} = useDisclosure();
 
   useEffect(() => {
     // create zkEVMProvider to use Passport with Immutable zkEVM
@@ -61,24 +66,9 @@ function App({ passportInstance }: { passportInstance: passport.Passport }) {
     passportInstance.logout();
   }
 
-  function openWalletBalances() {
-    wallet!.mount('widget-target');
-    wallet?.addListener(WalletEventType.DISCONNECT_WALLET, () => {
-      wallet.unmount();
-      logout();
-    })
-    wallet!.addListener(OrchestrationEventType.REQUEST_BRIDGE, (data: RequestBridgeEvent) => {
-      wallet?.unmount();
-      bridge?.mount('widget-target', {...data})
-    })
-    wallet!.addListener(OrchestrationEventType.REQUEST_SWAP, (data: RequestSwapEvent) => {
-      wallet?.unmount();
-      swap?.mount('widget-target', {...data})
-    })
-    wallet!.addListener(OrchestrationEventType.REQUEST_ONRAMP, (data: RequestOnrampEvent) => {
-      wallet?.unmount();
-      onramp?.mount('widget-target', {...data})
-    })
+  function openWidget(widgetType: WidgetType) {
+    setSelectedWidget(widgetType);
+    onOpen();
   }
 
   return (
@@ -87,16 +77,22 @@ function App({ passportInstance }: { passportInstance: passport.Passport }) {
       {!userInfo ? (
         <PassportButton title="Sign in with Immutable" onClick={login} />
       ) : (
-        <HStack className="logout">
-          <ImxBalance provider={zkEVMProvider!} address={walletAddress} />
-          <Button onClick={openWalletBalances}>Balances</Button>
-          <Button onClick={logout}>Logout</Button>
-        </HStack>
+        <Menu>
+          <MenuButton as={Button} bg={theme.colors.blackAlpha[50]} rightIcon={<ChevronDownIcon />}>
+            <Flex flexDirection="column">
+              <Text>{shortenAddress(walletAddress)}</Text>
+            </Flex>
+          </MenuButton>
+          <MenuList minW={40} w={60}>
+            <ImxBalance address={walletAddress} provider={zkEVMProvider!} />
+            <MenuDivider />
+            <MenuItem onClick={() => openWidget(WidgetType.WALLET)}>Balances (Widget)</MenuItem>
+            <MenuItem onClick={logout}>Logout</MenuItem>
+          </MenuList>
+        </Menu>
       )}
     </Box>
-    <VStack className="widget-container" align="center" justify="center">
-      <Box id="widget-target"/>
-    </VStack>
+    <WidgetModal isOpen={isOpen} onOpen={onOpen} onClose={onClose} widgetType={selectedWidget} />
   </Box>
   );
 }
