@@ -34,7 +34,6 @@ function ImxBalance({ address, provider }: ImxBalanceProps) {
 
   function handleCopy() {
     onCopy();
-    // Removed the toast from here and moved it to useEffect
   }
 
   if (loading) return null;  // Render nothing if loading
