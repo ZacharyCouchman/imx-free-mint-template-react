@@ -1,17 +1,20 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
-import './index.css'
-import { RouterProvider, createBrowserRouter } from 'react-router-dom'
-import PassportRedirect from './routes/PassportRedirect.tsx'
-import { passportInstance } from './immutable/passport.ts'
-import { CheckoutProvider } from './contexts/CheckoutContext.tsx'
-import { checkoutInstance } from './immutable/checkout.ts'
+// main.tsx
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import { ChakraProvider, ColorModeScript } from '@chakra-ui/react';
+import theme from './theme';  // Import the theme you created
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import PassportRedirect from './routes/PassportRedirect';
+import { passportInstance } from './immutable/passport';
+import { CheckoutProvider } from './contexts/CheckoutContext';
+import { checkoutInstance } from './immutable/checkout';
+import { AppHeaderBar } from './components/AppHeaderBar/AppHeaderBar';
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App passportInstance={passportInstance} />,
+    element: <App />,
   },
   {
     path: "/passport-redirect",
@@ -19,10 +22,16 @@ const router = createBrowserRouter([
   },
 ]);
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+const root = ReactDOM.createRoot(document.getElementById('root')!);
+
+root.render(
   <React.StrictMode>
+    <ColorModeScript initialColorMode={theme.config.initialColorMode} />
+    <ChakraProvider theme={theme}>
     <CheckoutProvider checkout={checkoutInstance}>
+      <AppHeaderBar />
       <RouterProvider router={router} />
     </CheckoutProvider>
+    </ChakraProvider>
   </React.StrictMode>,
-)
+);
