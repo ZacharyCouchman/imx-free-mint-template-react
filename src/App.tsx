@@ -24,9 +24,6 @@ function App({ passportInstance }: { passportInstance: passport.Passport }) {
   useEffect(() => {
     // create zkEVMProvider to use Passport with Immutable zkEVM
     setZkEVMProvider(passportInstance.connectEvm());
-
-    // create ImxProvider to use Passport with ImmutableX
-    // passportInstance.connectImx().then((imxProvider) => setImxProvider(imxProvider))
   }, [passportInstance]);
 
   async function login() {
