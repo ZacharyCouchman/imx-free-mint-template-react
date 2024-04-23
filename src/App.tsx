@@ -1,5 +1,6 @@
 // App.tsx
 import { Flex, theme } from '@chakra-ui/react';
+import { FreeMint } from './components/FreeMint/FreeMint';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       >
       {/* add background image here ^^ */}
       <Flex w={"100%"} flexDir={"row"} justifyContent={"center"} alignItems={"center"}>
+        <FreeMint />
       </Flex>
     </Flex>
   );
