@@ -9,11 +9,12 @@ import PassportRedirect from './routes/PassportRedirect';
 import { passportInstance } from './immutable/passport';
 import { CheckoutProvider } from './contexts/CheckoutContext';
 import { checkoutInstance } from './immutable/checkout';
+import { AppHeaderBar } from './components/AppHeaderBar/AppHeaderBar';
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App passportInstance={passportInstance} />,
+    element: <App />,
   },
   {
     path: "/passport-redirect",
@@ -27,9 +28,10 @@ root.render(
   <React.StrictMode>
     <ColorModeScript initialColorMode={theme.config.initialColorMode} />
     <ChakraProvider theme={theme}>
-      <CheckoutProvider checkout={checkoutInstance}>
-        <RouterProvider router={router} />
-      </CheckoutProvider>
+    <CheckoutProvider checkout={checkoutInstance}>
+      <AppHeaderBar />
+      <RouterProvider router={router} />
+    </CheckoutProvider>
     </ChakraProvider>
   </React.StrictMode>,
 );
