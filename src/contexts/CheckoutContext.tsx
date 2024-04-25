@@ -1,15 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { checkout } from "@imtbl/sdk";
 import {
-  BridgeEventType,
-  ConnectEventType,
-  OnRampEventType,
-  SwapEventType,
-  WalletEventType,
   Widget,
   WidgetTheme,
   WidgetType
 } from "@imtbl/sdk/checkout";
 import { ReactNode, createContext, useEffect, useState } from "react";
+import WidgetModal from "../components/WidgetModal/WidgetModal";
+import { useDisclosure } from "@chakra-ui/react";
 
 export interface Widgets {
   connect?: Widget<WidgetType.CONNECT>;
@@ -23,6 +21,7 @@ export interface CheckoutContextState {
   checkout?: checkout.Checkout;
   widgets: Widgets;
   widgetsFactory?: ImmutableCheckoutWidgets.WidgetsFactory;
+  openWidget: (widgetType:WidgetType) => void;
 }
 
 export const CheckoutContext = createContext<CheckoutContextState>({
@@ -32,7 +31,8 @@ export const CheckoutContext = createContext<CheckoutContextState>({
     swap: undefined,
     bridge: undefined,
     onramp: undefined,
-  }
+  },
+  openWidget: () => {},
 });
 
 export interface CheckoutProvider {
@@ -42,26 +42,19 @@ export interface CheckoutProvider {
 export function CheckoutProvider({ children, checkout }: CheckoutProvider) {
   const [widgetsFactory, setWidgetsFactory] = useState<ImmutableCheckoutWidgets.WidgetsFactory>();
   const [widgets, setWidgets] = useState<Widgets>({});
+  const {isOpen: isWidgetModalOpen, onOpen, onClose} = useDisclosure();
+  const [widgetToOpen, setWidgetToOpen] = useState(WidgetType.CONNECT);
+  // const [provider, setProvider] = useState<Provider>();
 
   useEffect(() => {
     // Initialise widgets and create all widgets at beginning of application
-
     checkout.widgets({ config: { theme: WidgetTheme.DARK } })
       .then((widgetsFactory: ImmutableCheckoutWidgets.WidgetsFactory) => {
         const connect = widgetsFactory.create(WidgetType.CONNECT, {});
-        connect.addListener(ConnectEventType.CLOSE_WIDGET, () => connect.unmount())
-
         const wallet = widgetsFactory.create(WidgetType.WALLET, {});
-        wallet.addListener(WalletEventType.CLOSE_WIDGET, () => wallet.unmount())
-
         const swap = widgetsFactory.create(WidgetType.SWAP, {});
-        swap.addListener(SwapEventType.CLOSE_WIDGET, () => swap.unmount())
-
         const bridge = widgetsFactory.create(WidgetType.BRIDGE, {});
-        bridge.addListener(BridgeEventType.CLOSE_WIDGET, () => bridge.unmount())
-
         const onramp = widgetsFactory.create(WidgetType.ONRAMP, {});
-        onramp.addListener(OnRampEventType.CLOSE_WIDGET, () => onramp.unmount())
 
         setWidgets({
           connect,
@@ -74,13 +67,25 @@ export function CheckoutProvider({ children, checkout }: CheckoutProvider) {
       })
   }, [checkout]);
 
+  const openWidget = (widgetType:WidgetType) => {
+    if(!Object.values(WidgetType).includes(widgetType)) return;
+    setWidgetToOpen(widgetType);
+    onOpen();
+  }
+
   return (
     <CheckoutContext.Provider value= {{
       checkout,
       widgets,
-      widgetsFactory
+      widgetsFactory,
+      openWidget,
+      // provider,
+      // setProvider
     }}>
+      <>
       {children}
+      <WidgetModal widgetType={widgetToOpen} isOpen={isWidgetModalOpen} onOpen={onOpen} onClose={onClose} />
+      </>
   </CheckoutContext.Provider>
   )
 }

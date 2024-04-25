@@ -10,6 +10,7 @@ import { passportInstance } from './immutable/passport';
 import { CheckoutProvider } from './contexts/CheckoutContext';
 import { checkoutInstance } from './immutable/checkout';
 import { AppHeaderBar } from './components/AppHeaderBar/AppHeaderBar';
+import { EIP1193ContextProvider } from './contexts/EIP1193Context';
 
 const router = createBrowserRouter([
   {
@@ -28,10 +29,12 @@ root.render(
   <React.StrictMode>
     <ColorModeScript initialColorMode={theme.config.initialColorMode} />
     <ChakraProvider theme={theme}>
-    <CheckoutProvider checkout={checkoutInstance}>
-      <AppHeaderBar />
-      <RouterProvider router={router} />
-    </CheckoutProvider>
+      <EIP1193ContextProvider>
+        <CheckoutProvider checkout={checkoutInstance}>
+          <AppHeaderBar />
+          <RouterProvider router={router} />
+        </CheckoutProvider>
+      </EIP1193ContextProvider>
     </ChakraProvider>
   </React.StrictMode>,
 );

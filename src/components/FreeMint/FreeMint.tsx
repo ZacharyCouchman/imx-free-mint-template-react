@@ -1,58 +1,73 @@
-import { Button, Card, CardBody, CardFooter, Image, Heading, Stack, Text, useToast } from "@chakra-ui/react";
+import { Button, Card, CardBody, CardFooter, Image, Heading, Stack, Text, useToast, ButtonGroup } from "@chakra-ui/react";
 import { config } from "../../api/config";
 import { eligibility } from "../../api/eligibility";
 import { mint } from "../../api/mint";
-import { useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { EIP1193Context } from "../../contexts/EIP1193Context";
 
 export function FreeMint() {
-  const [whitelistLoading, setWhitelistLoading] = useState(false);
-  const [whitelistError, setWhitelistError] = useState(false);
+  const {walletAddress, provider} = useContext(EIP1193Context);
+
+  // Local state
+  const [mintConfigLoading, setMintConfigLoading] = useState(false);
+  const [mintConfigError, setMintConfigError] = useState(false);
+  
+  const [mintLoading, setMintLoading] = useState(false);
+  const [mintError, setMintError] = useState(false);
+
+  const [eligibilityLoading, setEligibilityLoading] = useState(false);
+  const [eligibilityError, setEligibilityError] = useState(false);
 
   const toast = useToast();
 
+  const fetchMintConfiguration = useCallback(async () => {
+    setMintConfigLoading(true);
+    try {
+      const result = await config();
+      console.log("Mint configuration", result);
+    } catch (err) {
+      console.log(err);
+      setMintConfigError(true);
+    } finally {
+      setMintConfigLoading(false);
+    }
+  }, [])
+
+  // get free mint config on load
+  useEffect(() => {
+    fetchMintConfiguration();
+  }, [fetchMintConfiguration]);
+
   async function mintButton() {
-    setWhitelistLoading(true);
+    setMintLoading(true);
     try {
       const result = await mint();
       console.log("whitelist", result);
     } catch (err) {
       console.log(err);
-      setWhitelistError(true);
+      setMintError(true);
     } finally {
-      setWhitelistLoading(false);
-    }
-  }
-
-  async function checkConfigButton() {
-    setWhitelistLoading(true);
-    try {
-      const result = await config();
-      console.log("whitelist", result);
-    } catch (err) {
-      console.log(err);
-      setWhitelistError(true);
-    } finally {
-      setWhitelistLoading(false);
+      setMintLoading(false);
     }
   }
 
   async function checkEligibilityButton() {
-    setWhitelistLoading(true);
+    setEligibilityLoading(true);
     try {
       const result = await eligibility();
       console.log("whitelist", result);
     } catch (err) {
       console.log(err);
-      setWhitelistError(true);
+      setEligibilityError(true);
     } finally {
-      setWhitelistLoading(false);
+      setEligibilityLoading(false);
     }
   }
 
   useEffect(() => {
-    if (whitelistError) {
+    if (mintConfigError) {
       toast({
-        title: "Failed to check whitelist",
+        title: "Failed to retrieve mint configuration",
         status: "error",
         duration: 2000,
         isClosable: true,
@@ -60,13 +75,13 @@ export function FreeMint() {
       });
 
       setTimeout(() => {
-        setWhitelistError(false);
+        setMintConfigError(false);
       });
     }
-  }, [whitelistError]);
+  }, [mintConfigError, toast]);
 
   return (
-    <Card minH={"650px"} minW="sm" w={["100%", "430px"]}>
+    <Card minH={"650px"}  minW="sm" w={["100%", "430px"]}>
       {/* <CardHeader></CardHeader> */}
       <CardBody>
         <Image src="https://paradisetycoon.com/wp-content/uploads/2023/02/splash_logo_with_leaves_update.png" alt="Partner mint image" borderRadius="lg" />
@@ -76,15 +91,17 @@ export function FreeMint() {
         </Stack>
       </CardBody>
       <CardFooter display={"flex"} flexDirection={"column"}>
+        <ButtonGroup gap={2}>
         <Button variant="solid" colorScheme="blue" onClick={mintButton}>
           Mint
         </Button>
-        <Button variant="solid" colorScheme="blue" onClick={checkConfigButton}>
+        {/* <Button variant="solid" colorScheme="blue" onClick={fetchMintConfiguration}>
           Config
-        </Button>
+        </Button> */}
         <Button variant="solid" colorScheme="blue" onClick={checkEligibilityButton}>
           Eligibility
         </Button>
+        </ButtonGroup>
       </CardFooter>
     </Card>
   );

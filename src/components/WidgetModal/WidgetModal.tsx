@@ -1,7 +1,8 @@
 import { Modal, ModalContent, theme } from '@chakra-ui/react'
-import { BridgeEventType, ConnectEventType, OnRampEventType, OrchestrationEventType, RequestBridgeEvent, RequestOnrampEvent, RequestSwapEvent, SwapEventType, WalletEventType, WidgetType } from '@imtbl/sdk/checkout'
+import { BridgeEventType, ConnectEventType, ConnectionSuccess, OnRampEventType, OrchestrationEventType, ProviderEventType, ProviderUpdated, RequestBridgeEvent, RequestOnrampEvent, RequestSwapEvent, SwapEventType, WalletEventType, WidgetType } from '@imtbl/sdk/checkout'
 import { CheckoutContext } from '../../contexts/CheckoutContext';
 import { useContext, useEffect } from 'react';
+import { EIP1193Context } from '../../contexts/EIP1193Context';
 
 interface WidgetModal {
   widgetType: WidgetType;
@@ -15,6 +16,7 @@ function WidgetModal({
   isOpen,
   onClose
 }: WidgetModal) {
+  const {setProvider} = useContext(EIP1193Context);
   const {widgets: {connect, wallet, bridge, swap, onramp}} = useContext(CheckoutContext);
 
   useEffect(() => {
@@ -42,6 +44,20 @@ function WidgetModal({
     })
 
     switch(widgetType) {
+      case WidgetType.CONNECT: {
+        connect.addListener(ConnectEventType.SUCCESS, (data: ConnectionSuccess) => {
+          onClose();
+          connect.unmount();
+          setProvider(data.provider);
+        })
+        connect.addListener(ProviderEventType.PROVIDER_UPDATED, (data: ProviderUpdated) => {
+          setProvider(data.provider);
+        })
+        // Hack to get to render
+        const render = Promise.resolve();
+        render.then(() => connect.mount('widget-target'))
+        break;
+      }
       case WidgetType.WALLET: {
         wallet.addListener(WalletEventType.DISCONNECT_WALLET, () => {
           wallet.unmount();
@@ -66,7 +82,17 @@ function WidgetModal({
         break;
       }
     }
-  }, [isOpen, widgetType, connect, wallet, bridge, swap, onramp, onClose]);
+  }, [
+    isOpen, 
+    widgetType, 
+    connect, 
+    wallet, 
+    bridge, 
+    swap, 
+    onramp, 
+    onClose, 
+    setProvider]
+  );
 
   return (
     <Modal isOpen={isOpen} closeOnOverlayClick={false} onClose={onClose} isCentered>
