@@ -1,5 +1,5 @@
 import { Button, Card, CardBody, CardFooter, Image, Heading, Stack, Text, useToast, ButtonGroup } from "@chakra-ui/react";
-import { config } from "../../api/config";
+import { mintConfiguration } from "../../api/mintConfiguration";
 import { eligibility } from "../../api/eligibility";
 import { mint } from "../../api/mint";
 import { useCallback, useContext, useEffect, useState } from "react";
@@ -23,7 +23,7 @@ export function FreeMint() {
   const fetchMintConfiguration = useCallback(async () => {
     setMintConfigLoading(true);
     try {
-      const result = await config();
+      const result = await mintConfiguration();
       console.log("Mint configuration", result);
     } catch (err) {
       console.log(err);

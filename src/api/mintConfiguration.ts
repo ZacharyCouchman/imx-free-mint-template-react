@@ -1,6 +1,8 @@
-export async function config(): Promise<void> {
+import config, { applicationEnvironment } from "../config/config";
+
+export async function mintConfigurationg(): Promise<void> {
   // return Promise.resolve({ whitelisted: true });
-  const response = await fetch(`http://localhost:3000/config`, {
+  const response = await fetch(`${config[applicationEnvironment].mintingBackendApiBaseUrl}/config`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
