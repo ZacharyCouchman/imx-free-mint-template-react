@@ -1,8 +1,8 @@
 import config, { applicationEnvironment } from "../config/config";
 import { passportInstance } from "../immutable/passport";
+import { EligibilityResult } from "../types/eligibility";
 
-export async function eligibility(): Promise<void> {
-  // return Promise.resolve({ whitelisted: true });
+export async function eligibility(): Promise<EligibilityResult> {
   const IDToken = await passportInstance.getIdToken();
   const response = await fetch(`${config[applicationEnvironment].mintingBackendApiBaseUrl}/eligibility`, {
     method: "GET",
