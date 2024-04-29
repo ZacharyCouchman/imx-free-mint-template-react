@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { Mint } from '../../types/mint'
 import { MintRequestByIDResult } from '../../types/mintRequestById'
-import { Heading, Link, Spinner, Text, VStack } from '@chakra-ui/react'
+import { Heading, Link, Text, VStack } from '@chakra-ui/react'
 import config, { applicationEnvironment } from '../../config/config'
 import { shortenAddress } from '../../utils/walletAddress'
 import { mintRequestById } from '../../api/mintRequestById'
+import Countdown from '../Countdown/Countdown'
 
 interface MintStatus {
   mint: Mint;
@@ -29,7 +30,7 @@ export const MintStatus = ({ mint, walletAddress }: MintStatus) => {
 
       if(result.result[0].status === "pending") {
         mintStatusRequestCount.current++;
-        setTimeout(async () => await checkMintStatus(mint.uuid), 2000 * mintStatusRequestCount.current);
+        setTimeout(async () => await checkMintStatus(mint.uuid), 4000 * mintStatusRequestCount.current);
         return;
       }
 
@@ -41,7 +42,7 @@ export const MintStatus = ({ mint, walletAddress }: MintStatus) => {
 
     if(mint) {
       // start polling from mint uuid
-      checkMintStatus(mint.uuid);
+      setTimeout(async() => await checkMintStatus(mint.uuid), 10000);
     }
   }, [mint])
 
@@ -49,8 +50,8 @@ export const MintStatus = ({ mint, walletAddress }: MintStatus) => {
     <div>
       {!mintSucceeded && (
         <VStack gap={2} alignItems={'center'}>
-          <Text>Mint request receieved. Checking mint status...</Text>
-          <Spinner />
+          <Text>Mint request receieved. Please be patient. Checking your mint status in: </Text>
+          <Countdown endTime={(Date.now() + 10000)/1000} deadlineEventTopic='countdownMintStatus' />
         </VStack>
       )}
       {!mintStatusFailed && mintSucceeded && (

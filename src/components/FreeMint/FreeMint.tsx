@@ -99,10 +99,10 @@ export function FreeMint() {
   // recheck config and eligibility after countdown reaches deadline
   useEffect(() => {
     const reloadCheck = () => fetchMintConfiguration().then(() => checkEligibility());
-    window.addEventListener('countdownDeadline', reloadCheck)
+    window.addEventListener('countdownMintPhase', reloadCheck)
 
     return () => {
-      window.removeEventListener('countdownDeadline', reloadCheck)
+      window.removeEventListener('countdownMintPhase', reloadCheck)
     }
   }, [fetchMintConfiguration, checkEligibility])
 
@@ -120,7 +120,7 @@ export function FreeMint() {
   }, [mintResult, walletAddress])
 
   return (
-    <Card  minW="sm" w={["100%", "430px"]} bgColor={'rgba(0,0,0,0.75)'}>
+    <Card minW="xs" w={["100%", "430px"]} bgColor={'rgba(0,0,0,0.75)'}>
       <CardBody>
         <VStack mt="6" gap={4} alignItems={"center"}>
           <Heading size="lg">Free Mint Pass</Heading>
@@ -128,7 +128,7 @@ export function FreeMint() {
           <ChakraImage 
             src="https://checkout-cdn.immutable.com/v1/blob/img/tokens/imx.svg" 
             alt="Example Image" 
-            width={["100%", "300px"]}
+            width={["250px", "300px"]}
             />
           {(!mintConfigLoading && mintConfigResult) && <MintPhaseDetails mintPhases={mintConfigResult.mintPhases} />}
         </VStack>

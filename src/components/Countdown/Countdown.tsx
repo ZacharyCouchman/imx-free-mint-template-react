@@ -4,9 +4,11 @@ import { getTimeRemaining } from '../../utils/timer';
 
 interface Countdown {
   endTime: number; // unix timestamp in seconds
+  deadlineEventTopic: string;
 }
 function Countdown({
-  endTime
+  endTime,
+  deadlineEventTopic
 }: Countdown) {
 
     const timerRef = useRef<ReturnType<typeof setTimeout>>();
@@ -19,7 +21,7 @@ function Countdown({
         const { total, days, hours, minutes, seconds } = getTimeRemaining(deadline);
         if(total < 0) {
           // If total time remaining is less than 0, stop the countdown interval
-          window.dispatchEvent(new CustomEvent('countdownDeadline'))
+          window.dispatchEvent(new CustomEvent(deadlineEventTopic))
           clearInterval(timerRef.current);
           return;
         } 
