@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Menu, MenuButton, MenuDivider, MenuItem, MenuList, Text, theme, useColorModeValue } from '@chakra-ui/react'
+import { Box, Button, Flex, Menu, MenuButton, MenuDivider, MenuItem, MenuList, Text, theme } from '@chakra-ui/react'
 import { useCallback, useContext } from 'react'
 import { passportInstance, zkEVMProvider } from '../../immutable/passport';
 import { shortenAddress } from '../../utils/walletAddress';
@@ -11,8 +11,6 @@ import { EIP1193Context } from '../../contexts/EIP1193Context';
 export function AppHeaderBar() {
   const {walletAddress, provider, setProvider, isPassportProvider} = useContext(EIP1193Context);
   const {openWidget} = useContext(CheckoutContext);
-
-  const headerBgColor = useColorModeValue(theme.colors.transparent, theme.colors.blackAlpha[500])
 
   const logout = useCallback(() => {
     if(isPassportProvider) passportInstance.logout();
@@ -27,11 +25,9 @@ export function AppHeaderBar() {
       flexDirection={"row"} 
       alignItems={"center"} 
       justifyContent={"space-between"}
-      bg={headerBgColor}
+      bg={theme.colors.transparent}
       >
-      <Box>
-        {/** Put logo in here */}
-      </Box>
+      <Box></Box>
       <Box>
       {(!walletAddress || !provider) 
         ? (<Button variant="solid" colorScheme='blue' onClick={() => openWidget(WidgetType.CONNECT)}>Connect Wallet</Button>) //(<PassportButton title="Sign in with Immutable" onClick={login} />) 

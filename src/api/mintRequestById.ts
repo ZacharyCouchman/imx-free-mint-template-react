@@ -1,16 +1,15 @@
 import { passportInstance } from "../immutable/passport";
 import config, { applicationEnvironment } from "../config/config";
-import { Mint } from "../types/mint";
+import { MintRequestByIDResult } from "../types/mintRequestById";
 
-export async function mint(): Promise<Mint> {
+export async function mintRequestById(referenceId: string): Promise<MintRequestByIDResult> {
   const IDToken = await passportInstance.getIdToken();
-  const response = await fetch(`${config[applicationEnvironment].mintingBackendApiBaseUrl}/mint`, {
-    method: "POST",
+  const response = await fetch(`${config[applicationEnvironment].mintingBackendApiBaseUrl}/get-mint-request/${referenceId}`, {
+    method: "GET",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${IDToken}`,
-    },
-    body: JSON.stringify({}),
+    }
   });
 
   if (response.status >= 200 && response.status <= 299) return await response.json();

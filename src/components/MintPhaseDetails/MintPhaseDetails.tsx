@@ -15,12 +15,12 @@ export const MintPhaseDetails = ({ mintPhases }: MintPhaseDetails) => {
   const hasNextPhase = currentMintPhase !== -1 && currentMintPhase < mintPhases.length -1;
 
   return (
-    <VStack>
+    <VStack paddingY={4}>
       {isPreMint && <Countdown endTime={mintPhases[0].startTime} />}
       {!isPreMint && (
       <>
         <Heading size={"md"}>Current phase: {mintPhases[currentMintPhase]?.name}</Heading>
-        {hasNextPhase && (<><Heading size={"md"}>Next phase in: </Heading><Countdown endTime={mintPhases[currentMintPhase].endTime} /></>)}
+        {hasNextPhase && (<><Heading size={"md"}>{`${mintPhases[currentMintPhase +1]?.name || "Next"} phase starts in: `}</Heading><Countdown endTime={mintPhases[currentMintPhase].endTime} /></>)}
         </>
       )}
     </VStack>

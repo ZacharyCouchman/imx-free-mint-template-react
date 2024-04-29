@@ -14,7 +14,7 @@ interface ImxBalanceProps {
 
 function ImxBalance({ address, provider }: ImxBalanceProps) {
   const { loading, formattedBalance } = useImxBalance(provider, address);
-  const { onCopy, hasCopied } = useClipboard(address);
+  const { onCopy, hasCopied } = useClipboard(address.toLowerCase());
   const toast = useToast();
 
   useEffect(() => {
