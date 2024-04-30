@@ -1,6 +1,6 @@
 import { Box, Button, Flex, Menu, MenuButton, MenuDivider, MenuItem, MenuList, Text, theme } from '@chakra-ui/react'
 import { useCallback, useContext } from 'react'
-import { passportInstance, zkEVMProvider } from '../../immutable/passport';
+import { passportInstance } from '../../immutable/passport';
 import { shortenAddress } from '../../utils/walletAddress';
 import ImxBalance from '../ImxBalance/ImxBalance';
 import { ChevronDownIcon } from '@chakra-ui/icons';
@@ -39,7 +39,7 @@ export function AppHeaderBar() {
             </Flex>
           </MenuButton>
           <MenuList minW={40} w={60}>
-            <ImxBalance address={walletAddress} provider={zkEVMProvider!} />
+            <ImxBalance />
             <MenuDivider />
             <MenuItem onClick={logout}>Logout</MenuItem>
           </MenuList>

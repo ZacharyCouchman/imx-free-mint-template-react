@@ -1,8 +1,8 @@
-import { Provider } from "@imtbl/sdk/passport";
+import { Web3Provider } from "@ethersproject/providers";
 import BigNumber from "bignumber.js";
 import { useEffect, useState } from "react";
 
-export function useImxBalance(provider: Provider, address: string) {
+export function useImxBalance(provider: Web3Provider, address: string) {
   const [imxBalance, setImxBalance] = useState(new BigNumber(0));
   const [loading, setLoading] = useState(false);
 
@@ -10,8 +10,9 @@ export function useImxBalance(provider: Provider, address: string) {
   useEffect(() => {
     if (!provider || !address) return;
     setLoading(true);
-    provider.request({ method: 'eth_getBalance', params: [address, 'latest'] })
-      .then((balance) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (provider.provider as any).request({ method: 'eth_getBalance', params: [address, 'latest'] })
+      .then((balance: string) => {
         setImxBalance(new BigNumber(balance))
         setLoading(false);
       })

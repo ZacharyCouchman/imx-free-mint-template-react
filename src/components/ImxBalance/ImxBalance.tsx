@@ -1,20 +1,16 @@
-import { Provider } from "@imtbl/sdk/passport";
 import { useImxBalance } from "../../hooks/useImxBalance";
 import { shortenAddress } from "../../utils/walletAddress";
 import config, { applicationEnvironment } from "../../config/config";
 import { Flex, Image, Text, IconButton, useClipboard, useToast, Link } from '@chakra-ui/react';
 import { CopyIcon } from '@chakra-ui/icons';
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import PassportSymbol from '../../assets/passport_logo_32px.svg?react';
+import { EIP1193Context } from "../../contexts/EIP1193Context";
 
-interface ImxBalanceProps {
-  address: string;
-  provider: Provider;
-}
-
-function ImxBalance({ address, provider }: ImxBalanceProps) {
-  const { loading, formattedBalance } = useImxBalance(provider, address);
-  const { onCopy, hasCopied } = useClipboard(address.toLowerCase());
+function ImxBalance() {
+  const {walletAddress, provider, isPassportProvider} = useContext(EIP1193Context);
+  const { loading, formattedBalance } = useImxBalance(provider!, walletAddress);
+  const { onCopy, hasCopied } = useClipboard(walletAddress.toLowerCase());
   const toast = useToast();
 
   useEffect(() => {
@@ -30,7 +26,7 @@ function ImxBalance({ address, provider }: ImxBalanceProps) {
   }, [hasCopied, toast]); // Add toast to dependency array to avoid exhaustive-deps warning
 
   function goToExplorer() {
-    window.open(`${config[applicationEnvironment].explorerUrl}/address/${address}`, "_blank");
+    window.open(`${config[applicationEnvironment].explorerUrl}/address/${walletAddress}`, "_blank");
   }
 
   function handleCopy() {
@@ -47,9 +43,9 @@ function ImxBalance({ address, provider }: ImxBalanceProps) {
       </Flex>
       <Flex justifyContent={"space-between"} alignItems={"center"}>
         <Flex gap={2}>
-          <PassportSymbol height={"20px"} width={"20px"} />
+          {isPassportProvider && <PassportSymbol height={"20px"} width={"20px"} />}
           <Link cursor="pointer" onClick={goToExplorer}>
-            {shortenAddress(address)}
+            {shortenAddress(walletAddress)}
           </Link>
         </Flex>
           <IconButton
