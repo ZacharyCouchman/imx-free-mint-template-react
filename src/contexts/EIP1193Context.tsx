@@ -34,7 +34,7 @@ export const EIP1193ContextProvider = ({children}: EIP1193ContextProvider) => {
     
     const setProviderDetails = async () => {
       const address = await provider?.getSigner().getAddress();
-      setWalletAddress(address);
+      setWalletAddress(address.toLowerCase());
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       setIsPassport((provider?.provider as any)?.isPassport === true);

@@ -57,7 +57,7 @@ export const MintStatus = ({ mint, walletAddress }: MintStatus) => {
       {!mintStatusFailed && mintSucceeded && (
         <VStack>
           <Heading fontSize={"x-large"} color={'blue.400'}>Mint Succeeded!</Heading>
-          <Link onClick={() => window.open(`${config[applicationEnvironment].explorerUrl}/address/${walletAddress}`, "_blank")}>Inpect txns {shortenAddress(walletAddress)}</Link>
+          <Link onClick={() => window.open(`${config[applicationEnvironment].explorerUrl}/address/${walletAddress}?tab=token_transfers`, "_blank")}>Inpect txns {shortenAddress(walletAddress)}</Link>
         </VStack>
         )}
       {mintStatusFailed && <Text>There was a problem checking the status of your mint. Please be patient</Text>}

@@ -10,7 +10,9 @@ import { Mint } from "../../types/mint";
 import { MintStatus } from "../MintStatus/MintStatus";
 import { WidgetType } from "@imtbl/sdk/checkout";
 import { CheckoutContext } from "../../contexts/CheckoutContext";
-import { mint } from "../../api/mint";
+import { mintForPassport } from "../../api/mintForPassport";
+import { mintForEOA } from "../../api/mintForEOA";
+import { eoaSignableMessage } from "../../api/eoaSignableMessage";
 
 export function FreeMint() {
   const {walletAddress, provider, isPassportProvider} = useContext(EIP1193Context);
@@ -25,6 +27,9 @@ export function FreeMint() {
 
   const [eligibilityLoading, setEligibilityLoading] = useState(false);
   const [eligibilityResult, setEligibilityResult] = useState<EligibilityResult>();
+
+  const eligiblityActivePhase = eligibilityResult?.mintPhases
+  .find((phase) => phase.isActive);
 
   const toast = useToast();
 
@@ -48,10 +53,10 @@ export function FreeMint() {
     }
   }, [toast])
 
-  const checkEligibility = useCallback(async () => {
+  const checkEligibility = useCallback(async (walletAddress: string) => {
     setEligibilityLoading(true);
     try {
-      const result = await eligibility();
+      const result = await eligibility(walletAddress);
       setEligibilityResult(result)
     } catch (err) {
       console.log(err);
@@ -67,23 +72,27 @@ export function FreeMint() {
     }
   },[toast]);
 
-  const signMessage = async (): Promise<string> => {
+  const signMessage = useCallback(async (message: string): Promise<string> => {
     if(!provider) return "";
-    try{ 
-      return await provider.getSigner().signMessage((mintConfigResult?.mintPhases[0] as any).signMessagePayload);
+    try { 
+      return await provider.getSigner().signMessage(message);
     } catch(err) {
-      console.error(error);
+      console.error(err);
       return "";
     }
-  }
+  }, [provider])
 
-  async function mintButton() {
+  const mintButton = useCallback(async () => {
     setMintLoading(true);
-    try {
-      let signature = '';
-      if(!isPassportProvider) {
-        console.log('Not Passport provider, must perform signature of payload')
-        signature = await signMessage();
+    let result: Mint;
+    try{
+      if(isPassportProvider) {
+        // mint for Passport using JWT
+        result = await mintForPassport();
+      } else {
+        // mint for EOA using signMessage
+        const messageToSign = await eoaSignableMessage();
+        const signature = await signMessage(messageToSign.serverConfig);
         console.log(signature);
         if(!signature) {
           console.log("User must sign message to continue")
@@ -96,10 +105,11 @@ export function FreeMint() {
           })
           return;
         }
+        result = await mintForEOA(signature);
       }
-      const result = await mint(signature);
-      localStorage.setItem("immutable-mint-request-result", JSON.stringify({...result, status: "pending"}))
+
       setMintResult(result);
+      localStorage.setItem("immutable-mint-request-result", JSON.stringify({...result, status: "pending"}))
       toast({
         title: "Minting request received! Please wait...",
         status: "success",
@@ -107,12 +117,12 @@ export function FreeMint() {
         isClosable: true,
         position: "bottom-right",
       });
-    } catch (err) {
-      console.log(err);
+    } catch(err) {
+      console.error(err)
     } finally {
       setMintLoading(false);
     }
-  }
+  }, [isPassportProvider, toast, signMessage]);
 
   // get mint config on load
   useEffect(() => {
@@ -121,18 +131,19 @@ export function FreeMint() {
 
   // check eligibility when user connects
   useEffect(() => {
-    if(walletAddress) checkEligibility();
+    if(walletAddress) checkEligibility(walletAddress);
   }, [walletAddress, checkEligibility])
 
   // recheck config and eligibility after countdown reaches deadline
   useEffect(() => {
-    const reloadCheck = () => fetchMintConfiguration().then(() => checkEligibility());
+    if(!walletAddress) return;
+    const reloadCheck = () => fetchMintConfiguration().then(() => checkEligibility(walletAddress));
     window.addEventListener('countdownMintPhase', reloadCheck)
 
     return () => {
       window.removeEventListener('countdownMintPhase', reloadCheck)
     }
-  }, [fetchMintConfiguration, checkEligibility])
+  }, [walletAddress, fetchMintConfiguration, checkEligibility])
 
   useEffect(() => {
     if(!mintResult && walletAddress) {
@@ -167,13 +178,18 @@ export function FreeMint() {
             <Button 
             variant="solid" 
             colorScheme="blue" 
-            isDisabled={ mintLoading || Boolean(mintResult)}  //!eligibilityResult?.mintPhases.find((phase) => phase.isActive)?.isEligible ||
+            isDisabled={!eligiblityActivePhase 
+              || !eligiblityActivePhase.isEligible 
+              || (eligiblityActivePhase.walletTokenAllowance && eligiblityActivePhase.walletTokenAllowance === 0) 
+              || mintLoading 
+              || Boolean(mintResult)
+            }
             onClick={mintButton}
             >
               Mint
             </Button>
           )}
-          {mintResult && <MintStatus mint={mintResult} walletAddress={walletAddress} />}
+          {mintResult && walletAddress && <MintStatus mint={mintResult} walletAddress={walletAddress} />}
       </CardFooter>
     </Card>
   );

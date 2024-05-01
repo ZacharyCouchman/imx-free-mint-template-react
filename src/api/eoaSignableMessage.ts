@@ -1,8 +1,8 @@
 import config, { applicationEnvironment } from "../config/config";
-import { EligibilityResult } from "../types/eligibility";
+import { EoaMintMessage } from "../types/eoaMintMessage";
 
-export async function eligibility(walletAddress: string): Promise<EligibilityResult> {
-  const response = await fetch(`${config[applicationEnvironment].mintingBackendApiBaseUrl}/eligibility/${walletAddress.toLowerCase()}`, {
+export async function eoaSignableMessage(): Promise<EoaMintMessage> {
+  const response = await fetch(`${config[applicationEnvironment].mintingBackendApiBaseUrl}/get-eoa-mint-message`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
