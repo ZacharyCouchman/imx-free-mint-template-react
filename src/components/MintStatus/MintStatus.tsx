@@ -18,7 +18,6 @@ export const MintStatus = ({ mint, walletAddress }: MintStatus) => {
   const mintStatusRequestCount = useRef(0);
 
   useEffect(() => {
-
     const checkMintStatus = async (uuid: string) => {
       const result: MintRequestByIDResult = await mintRequestById(uuid);
       
@@ -57,7 +56,7 @@ export const MintStatus = ({ mint, walletAddress }: MintStatus) => {
       {!mintStatusFailed && mintSucceeded && (
         <VStack>
           <Heading fontSize={"x-large"} color={'blue.400'}>Mint Succeeded!</Heading>
-          <Link onClick={() => window.open(`${config[applicationEnvironment].explorerUrl}/address/${walletAddress}?tab=token_transfers`, "_blank")}>Inpect txns {shortenAddress(walletAddress)}</Link>
+          <Link onClick={() => window.open(`${config[applicationEnvironment].explorerUrl}/address/${walletAddress}?tab=token_transfers`, "_blank")}>Inpect token transactions {shortenAddress(walletAddress)}</Link>
         </VStack>
         )}
       {mintStatusFailed && <Text>There was a problem checking the status of your mint. Please be patient</Text>}

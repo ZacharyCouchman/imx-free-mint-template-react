@@ -14,7 +14,7 @@ export function AppHeaderBar() {
 
   const logout = useCallback(() => {
     if(isPassportProvider) passportInstance.logout();
-    else setProvider(undefined);
+    else setProvider(null);
   }, [isPassportProvider, setProvider]);
 
   return (

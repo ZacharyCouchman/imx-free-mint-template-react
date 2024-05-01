@@ -23,7 +23,7 @@ export function FreeMint() {
   const [mintConfigResult, setMintConfigResult] = useState<MintConfigurationResult>();
   
   const [mintLoading, setMintLoading] = useState(false);
-  const [mintResult, setMintResult] = useState<Mint>();
+  const [mintResult, setMintResult] = useState<Mint | null>(null);
 
   const [eligibilityLoading, setEligibilityLoading] = useState(false);
   const [eligibilityResult, setEligibilityResult] = useState<EligibilityResult>();
@@ -149,14 +149,23 @@ export function FreeMint() {
     if(!mintResult && walletAddress) {
       const lsMintResultString = localStorage.getItem("immutable-mint-request-result");
       if(!lsMintResultString) return;
-      console.log('restoring mint result from localstorage')
-      const restoredMintResult = JSON.parse(lsMintResultString);
-      if(restoredMintResult.walletAddress.toLowerCase() === walletAddress.toLowerCase()) {
+      
+      const restoredMintResult: Mint = JSON.parse(lsMintResultString);
+
+      if(restoredMintResult.walletAddress.length > 0
+        && walletAddress.length > 0 
+        && restoredMintResult.walletAddress.toLowerCase() === walletAddress.toLowerCase()) {
+        console.log('restoring mint result from localstorage', restoredMintResult)
         // current wallet address matches previous mint result in localstorage
         setMintResult(restoredMintResult)
       }
     }
   }, [mintResult, walletAddress])
+
+  // Edge case for when changing wallet addresses
+  useEffect(() => {
+    if(!walletAddress) setMintResult(null);
+  }, [walletAddress])
 
   return (
     <Card minW="xs" w={["100%", "430px"]} bgColor={'rgba(0,0,0,0.75)'}>

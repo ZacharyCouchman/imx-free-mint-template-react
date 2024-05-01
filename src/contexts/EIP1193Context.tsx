@@ -2,15 +2,15 @@ import { createContext, useEffect, useState } from "react";
 import { Web3Provider } from "@ethersproject/providers";
 
 export interface EIP1193ContextState {
-  provider?: Web3Provider;
-  setProvider: (provider: Web3Provider | undefined) => void;
+  provider: Web3Provider | null;
+  setProvider: (provider: Web3Provider | null) => void;
   walletAddress: string;
   setWalletAddress: (address: string) => void;
   isPassportProvider: boolean;
 }
 
 export const EIP1193Context = createContext<EIP1193ContextState>({
-  provider: undefined,
+  provider: null,
   setProvider: () => {},
   walletAddress: '',
   setWalletAddress: () => {},
@@ -21,7 +21,7 @@ interface EIP1193ContextProvider {
   children: React.ReactNode;
 }
 export const EIP1193ContextProvider = ({children}: EIP1193ContextProvider) => {
-  const [provider, setProvider] = useState<Web3Provider | undefined>();
+  const [provider, setProvider] = useState<Web3Provider | null>(null);
   const [walletAddress, setWalletAddress] = useState('');
   const [isPassport, setIsPassport] = useState(false);
 
