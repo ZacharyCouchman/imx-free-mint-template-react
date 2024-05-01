@@ -2,7 +2,7 @@ import { passportInstance } from "../immutable/passport";
 import config, { applicationEnvironment } from "../config/config";
 import { Mint } from "../types/mint";
 
-export async function mint(): Promise<Mint> {
+export async function mint(signature: string): Promise<Mint> {
   const IDToken = await passportInstance.getIdToken();
   const response = await fetch(`${config[applicationEnvironment].mintingBackendApiBaseUrl}/mint`, {
     method: "POST",
@@ -10,7 +10,9 @@ export async function mint(): Promise<Mint> {
       "Content-Type": "application/json",
       Authorization: `Bearer ${IDToken}`,
     },
-    body: JSON.stringify({}),
+    body: JSON.stringify({
+      walletSignature: signature
+    }),
   });
 
   if (response.status >= 200 && response.status <= 299) return await response.json();

@@ -13,7 +13,7 @@ import { CheckoutContext } from "../../contexts/CheckoutContext";
 import { mint } from "../../api/mint";
 
 export function FreeMint() {
-  const {walletAddress, provider} = useContext(EIP1193Context);
+  const {walletAddress, provider, isPassportProvider} = useContext(EIP1193Context);
   const {openWidget} = useContext(CheckoutContext);
 
   // Local state
@@ -32,6 +32,7 @@ export function FreeMint() {
     setMintConfigLoading(true);
     try {
       const result = await mintConfiguration();
+      console.log(result)
       setMintConfigResult(result);
     } catch (err) {
       console.log(err);
@@ -66,10 +67,37 @@ export function FreeMint() {
     }
   },[toast]);
 
+  const signMessage = async (): Promise<string> => {
+    if(!provider) return "";
+    try{ 
+      return await provider.getSigner().signMessage((mintConfigResult?.mintPhases[0] as any).signMessagePayload);
+    } catch(err) {
+      console.error(error);
+      return "";
+    }
+  }
+
   async function mintButton() {
     setMintLoading(true);
     try {
-      const result = await mint();
+      let signature = '';
+      if(!isPassportProvider) {
+        console.log('Not Passport provider, must perform signature of payload')
+        signature = await signMessage();
+        console.log(signature);
+        if(!signature) {
+          console.log("User must sign message to continue")
+          toast({
+            title: "You must sign the message to continue",
+            position: 'bottom-right',
+            status: 'error',
+            duration: 4000,
+            isClosable: true,
+          })
+          return;
+        }
+      }
+      const result = await mint(signature);
       localStorage.setItem("immutable-mint-request-result", JSON.stringify({...result, status: "pending"}))
       setMintResult(result);
       toast({
@@ -139,7 +167,7 @@ export function FreeMint() {
             <Button 
             variant="solid" 
             colorScheme="blue" 
-            isDisabled={!eligibilityResult?.mintPhases.find((phase) => phase.isActive)?.isEligible || mintLoading || Boolean(mintResult)} 
+            isDisabled={ mintLoading || Boolean(mintResult)}  //!eligibilityResult?.mintPhases.find((phase) => phase.isActive)?.isEligible ||
             onClick={mintButton}
             >
               Mint
