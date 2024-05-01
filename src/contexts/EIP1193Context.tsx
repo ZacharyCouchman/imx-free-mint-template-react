@@ -42,6 +42,14 @@ export const EIP1193ContextProvider = ({children}: EIP1193ContextProvider) => {
     setProviderDetails();
   }, [provider]);
 
+  useEffect(() => {
+    if(provider && provider.provider) {
+      (provider.provider as any)?.on('accountsChanged', (accounts: string[]) => {
+        setWalletAddress(accounts.length > 0 ? accounts[0].toLowerCase() : "");
+      })
+    }
+  }, [provider])
+
   return (
     <EIP1193Context.Provider value={{
       provider, 
