@@ -1,9 +1,9 @@
 import { Button, Card, CardBody, CardFooter, Image as ChakraImage, Heading, Text, VStack, useToast } from "@chakra-ui/react";
 import { mintConfiguration } from "../../api/mintConfiguration";
 import { eligibility } from "../../api/eligibility";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { EIP1193Context } from "../../contexts/EIP1193Context";
-import { MintConfigurationResult } from "../../types/mintConfiguration";
+import { MintConfigurationResult, MintPhase } from "../../types/mintConfiguration";
 import { MintPhaseDetails } from "../MintPhaseDetails/MintPhaseDetails";
 import { EligibilityResult } from "../../types/eligibility";
 import { Mint } from "../../types/mint";
@@ -31,6 +31,11 @@ export function FreeMint() {
   const eligiblityActivePhase = eligibilityResult?.mintPhases
   .find((phase) => phase.isActive);
 
+  const totalMintedAcrossAllPhases = useMemo(() => {
+    if(!mintConfigResult) return;
+    return mintConfigResult.mintPhases.reduce((prev: number, phase: MintPhase) => { return phase.totalMinted + prev}, 0)
+  } , [mintConfigResult])
+
   const toast = useToast();
 
   const fetchMintConfiguration = useCallback(async () => {
@@ -39,6 +44,7 @@ export function FreeMint() {
       const result = await mintConfiguration();
       console.log(result)
       setMintConfigResult(result);
+      return result;
     } catch (err) {
       console.log(err);
       toast({
@@ -178,6 +184,7 @@ export function FreeMint() {
             alt="Example Image" 
             width={["250px", "300px"]}
             />
+          {mintConfigResult && totalMintedAcrossAllPhases !== undefined && <Heading size="md">Total minted: {totalMintedAcrossAllPhases} / {mintConfigResult.maxTokenSupplyAcrossAllPhases}</Heading>}
           {(!mintConfigLoading && mintConfigResult) && <MintPhaseDetails mintPhases={mintConfigResult.mintPhases} />}
         </VStack>
       </CardBody>

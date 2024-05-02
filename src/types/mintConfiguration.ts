@@ -13,4 +13,5 @@ export interface MintPhase {
   endTokenID: number;
   enableAllowList: boolean;
   maxPerWallet?: number;
+  totalMinted: number;
 }
