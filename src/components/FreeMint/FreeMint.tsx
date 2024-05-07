@@ -1,9 +1,9 @@
 import { Button, Card, CardBody, CardFooter, Image as ChakraImage, Heading, Text, VStack, useToast } from "@chakra-ui/react";
 import { mintConfiguration } from "../../api/mintConfiguration";
 import { eligibility } from "../../api/eligibility";
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { EIP1193Context } from "../../contexts/EIP1193Context";
-import { MintConfigurationResult, MintPhase } from "../../types/mintConfiguration";
+import { MintConfigurationResult } from "../../types/mintConfiguration";
 import { MintPhaseDetails } from "../MintPhaseDetails/MintPhaseDetails";
 import { EligibilityResult } from "../../types/eligibility";
 import { Mint } from "../../types/mint";
@@ -13,6 +13,7 @@ import { CheckoutContext } from "../../contexts/CheckoutContext";
 import { mintForPassport } from "../../api/mintForPassport";
 import { mintForEOA } from "../../api/mintForEOA";
 import { eoaSignableMessage } from "../../api/eoaSignableMessage";
+import { getMintResultsLS, updateMintResultLS } from "../../utils/localStorage";
 
 export function FreeMint() {
   const {walletAddress, provider, isPassportProvider} = useContext(EIP1193Context);
@@ -30,11 +31,6 @@ export function FreeMint() {
 
   const eligiblityActivePhase = eligibilityResult?.mintPhases
   .find((phase) => phase.isActive);
-
-  const totalMintedAcrossAllPhases = useMemo(() => {
-    if(!mintConfigResult) return;
-    return mintConfigResult.mintPhases.reduce((prev: number, phase: MintPhase) => { return phase.totalMinted + prev}, 0)
-  } , [mintConfigResult])
 
   const toast = useToast();
 
@@ -115,7 +111,9 @@ export function FreeMint() {
       }
 
       setMintResult(result);
-      localStorage.setItem("immutable-mint-request-result", JSON.stringify({...result, status: "pending"}))
+
+      updateMintResultLS(result, 'pending');
+
       toast({
         title: "Minting request received! Please wait...",
         status: "success",
@@ -153,17 +151,16 @@ export function FreeMint() {
 
   useEffect(() => {
     if(!mintResult && walletAddress) {
-      const lsMintResultString = localStorage.getItem("immutable-mint-request-result");
-      if(!lsMintResultString) return;
-      
-      const restoredMintResult: Mint = JSON.parse(lsMintResultString);
+      const existingMintResults = getMintResultsLS();
+      if(existingMintResults.length === 0) return;
 
-      if(restoredMintResult.walletAddress.length > 0
-        && walletAddress.length > 0 
-        && restoredMintResult.walletAddress.toLowerCase() === walletAddress.toLowerCase()) {
-        console.log('restoring mint result from localstorage', restoredMintResult)
+      const restoredMintForWallet = existingMintResults.find((existing) => 
+        existing.walletAddress.toLowerCase() === walletAddress.toLowerCase())
+
+      if(restoredMintForWallet) {
+        console.log('restoring mint result from localstorage', restoredMintForWallet)
         // current wallet address matches previous mint result in localstorage
-        setMintResult(restoredMintResult)
+        setMintResult(restoredMintForWallet)
       }
     }
   }, [mintResult, walletAddress])
@@ -184,7 +181,6 @@ export function FreeMint() {
             alt="Example Image" 
             width={["250px", "300px"]}
             />
-          {mintConfigResult && totalMintedAcrossAllPhases !== undefined && <Heading size="md">Total minted: {totalMintedAcrossAllPhases} / {mintConfigResult.maxTokenSupplyAcrossAllPhases}</Heading>}
           {(!mintConfigLoading && mintConfigResult) && <MintPhaseDetails mintPhases={mintConfigResult.mintPhases} />}
         </VStack>
       </CardBody>
@@ -195,8 +191,7 @@ export function FreeMint() {
             variant="solid" 
             colorScheme="blue" 
             isDisabled={!eligiblityActivePhase 
-              || !eligiblityActivePhase.isEligible 
-              || (eligiblityActivePhase.walletTokenAllowance && eligiblityActivePhase.walletTokenAllowance === 0) 
+              || !eligiblityActivePhase.isAllowListed
               || mintLoading 
               || Boolean(mintResult)
             }

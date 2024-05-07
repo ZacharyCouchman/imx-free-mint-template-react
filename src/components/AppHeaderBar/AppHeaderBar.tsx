@@ -26,6 +26,7 @@ export function AppHeaderBar() {
       alignItems={"center"} 
       justifyContent={"space-between"}
       bg={theme.colors.transparent}
+      zIndex={5}
       >
       <Box></Box>
       <Box>

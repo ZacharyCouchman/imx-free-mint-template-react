@@ -6,6 +6,7 @@ import config, { applicationEnvironment } from '../../config/config'
 import { shortenAddress } from '../../utils/walletAddress'
 import { mintRequestById } from '../../api/mintRequestById'
 import Countdown from '../Countdown/Countdown'
+import { updateMintResultLS } from '../../utils/localStorage'
 
 interface MintStatus {
   mint: Mint;
@@ -34,7 +35,7 @@ export const MintStatus = ({ mint, walletAddress }: MintStatus) => {
       }
 
       if(result.result[0].status === "succeeded"){
-        localStorage.setItem("immutable-mint-request-result", JSON.stringify({...mint, status: 'succeeded'}))
+        updateMintResultLS(mint, 'succeeded')
         setMintSucceeded(true);
       }
     }

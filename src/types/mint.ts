@@ -3,4 +3,5 @@ export interface Mint {
   collectionAddress: string;
   walletAddress: string;
   uuid: string;
+  status: string;
 }

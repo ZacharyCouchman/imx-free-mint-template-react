@@ -42,9 +42,9 @@ function App() {
       bgRepeat={"no-repeat"}
       bgSize={"cover"}
       >
-      <Flex w={"100%"} flexDir={"column"} justifyContent={"flex-start"} alignItems={"center"}>
+      <Flex w={"100%"} flexDir={"column"} justifyContent={"flex-start"} alignItems={"center"} px={[2,0]}>
         <AppHeaderBar />
-        <Box paddingX={4} mb={10}>
+        <Box zIndex={1} paddingX={4} mb={10}>
           <ChakraImage 
             src="https://assets-global.website-files.com/646557ee455c3e16e4a9bcb3/646557ee455c3e16e4a9bcbe_immutable-logo.svg" 
             alt="Example Image" 
