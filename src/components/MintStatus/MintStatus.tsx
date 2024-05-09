@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import { Mint } from '../../types/mint'
 import { MintRequestByIDResult } from '../../types/mintRequestById'
 import { Heading, Link, Text, VStack } from '@chakra-ui/react'
 import config, { applicationEnvironment } from '../../config/config'
@@ -7,12 +6,13 @@ import { shortenAddress } from '../../utils/walletAddress'
 import { mintRequestById } from '../../api/mintRequestById'
 import Countdown from '../Countdown/Countdown'
 import { updateMintResultLS } from '../../utils/localStorage'
+import { Mint } from '../../types/mint'
 
 interface MintStatus {
-  mint: Mint;
+  mintId: string;
   walletAddress: string;
 }
-export const MintStatus = ({ mint, walletAddress }: MintStatus) => {
+export const MintStatus = ({ mintId, walletAddress }: MintStatus) => {
   const [mintSucceeded, setMintSucceeded] = useState(false);
   const [mintStatusFailed, setMintStatusFailed] = useState(false);
   
@@ -30,28 +30,28 @@ export const MintStatus = ({ mint, walletAddress }: MintStatus) => {
 
       if(result.result[0].status === "pending") {
         mintStatusRequestCount.current++;
-        setTimeout(async () => await checkMintStatus(mint.uuid), 4000 * mintStatusRequestCount.current);
+        setTimeout(async () => await checkMintStatus(mintId), 4000 * mintStatusRequestCount.current);
         return;
       }
 
       if(result.result[0].status === "succeeded"){
-        updateMintResultLS(mint, 'succeeded')
+        updateMintResultLS({uuid: mintId} as Mint, 'succeeded')
         setMintSucceeded(true);
       }
     }
 
-    if(mint) {
+    if(mintId) {
       // start polling from mint uuid
-      setTimeout(async() => await checkMintStatus(mint.uuid), 10000);
+      setTimeout(async() => await checkMintStatus(mintId), 10000);
     }
-  }, [mint])
+  }, [mintId])
 
   return (
     <div>
       {!mintSucceeded && (
         <VStack gap={2} alignItems={'center'}>
           <Text>Mint request receieved. Please be patient. Checking your mint status in: </Text>
-          <Countdown endTime={(Date.now() + 10000)/1000} deadlineEventTopic='countdownMintStatus' />
+          <Countdown size='md' endTime={(Date.now() + 10000)/1000} deadlineEventTopic='countdownMintStatus' />
         </VStack>
       )}
       {!mintStatusFailed && mintSucceeded && (

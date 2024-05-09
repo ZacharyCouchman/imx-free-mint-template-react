@@ -5,10 +5,12 @@ import { getTimeRemaining } from '../../utils/timer';
 interface Countdown {
   endTime: number; // unix timestamp in seconds
   deadlineEventTopic: string;
+  size?: 'sm' | 'md' | 'lg' | 'xl'
 }
 function Countdown({
   endTime,
-  deadlineEventTopic
+  deadlineEventTopic,
+  size = 'xl'
 }: Countdown) {
 
     const timerRef = useRef<ReturnType<typeof setTimeout>>();
@@ -38,7 +40,7 @@ function Countdown({
             ":" +
             (seconds > 9 ? seconds : "0" + seconds)
         );
-    }, []);
+    }, [deadlineEventTopic]);
  
     const createTimer = useCallback((deadline: Date) => {
       if (timerRef.current) {
@@ -54,7 +56,7 @@ function Countdown({
     }, [createTimer, getDeadlineTime]);
  
     return (
-      <Heading>{timer}</Heading>
+      <Heading size={size}>{timer}</Heading>
     );
 }
 

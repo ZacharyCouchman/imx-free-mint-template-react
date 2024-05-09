@@ -12,8 +12,7 @@ import { WidgetType } from "@imtbl/sdk/checkout";
 import { CheckoutContext } from "../../contexts/CheckoutContext";
 import { mintForPassport } from "../../api/mintForPassport";
 import { mintForEOA } from "../../api/mintForEOA";
-import { eoaSignableMessage } from "../../api/eoaSignableMessage";
-import { getMintResultsLS, updateMintResultLS } from "../../utils/localStorage";
+import { updateMintResultLS } from "../../utils/localStorage";
 
 export function FreeMint() {
   const {walletAddress, provider, isPassportProvider} = useContext(EIP1193Context);
@@ -24,10 +23,10 @@ export function FreeMint() {
   const [mintConfigResult, setMintConfigResult] = useState<MintConfigurationResult>();
   
   const [mintLoading, setMintLoading] = useState(false);
-  const [mintResult, setMintResult] = useState<Mint | null>(null);
+  const [mintId, setMintId] = useState<string | null>(null);
 
   const [eligibilityLoading, setEligibilityLoading] = useState(false);
-  const [eligibilityResult, setEligibilityResult] = useState<EligibilityResult>();
+  const [eligibilityResult, setEligibilityResult] = useState<EligibilityResult | null>(null);
 
   const eligiblityActivePhase = eligibilityResult?.mintPhases
   .find((phase) => phase.isActive);
@@ -60,6 +59,7 @@ export function FreeMint() {
     try {
       const result = await eligibility(walletAddress);
       setEligibilityResult(result)
+      setMintId(result.hasMinted) // null or mint uuid
     } catch (err) {
       console.log(err);
       toast({
@@ -93,9 +93,11 @@ export function FreeMint() {
         result = await mintForPassport();
       } else {
         // mint for EOA using signMessage
-        const messageToSign = await eoaSignableMessage();
-        const signature = await signMessage(messageToSign.serverConfig);
-        console.log(signature);
+        if(!mintConfigResult) {
+          console.error("No mint configuration found.")
+          return;
+        }
+        const signature = await signMessage(mintConfigResult.eoaMintMessage);
         if(!signature) {
           console.log("User must sign message to continue")
           toast({
@@ -110,7 +112,7 @@ export function FreeMint() {
         result = await mintForEOA(signature);
       }
 
-      setMintResult(result);
+      setMintId(result.uuid);
 
       updateMintResultLS(result, 'pending');
 
@@ -126,7 +128,7 @@ export function FreeMint() {
     } finally {
       setMintLoading(false);
     }
-  }, [isPassportProvider, toast, signMessage]);
+  }, [isPassportProvider, toast, mintConfigResult, signMessage]);
 
   // get mint config on load
   useEffect(() => {
@@ -135,7 +137,12 @@ export function FreeMint() {
 
   // check eligibility when user connects
   useEffect(() => {
-    if(walletAddress) checkEligibility(walletAddress);
+    if(!walletAddress) {
+      setMintId(null);
+      setEligibilityResult(null);
+    } else {
+      checkEligibility(walletAddress);
+    }
   }, [walletAddress, checkEligibility])
 
   // recheck config and eligibility after countdown reaches deadline
@@ -149,27 +156,6 @@ export function FreeMint() {
     }
   }, [walletAddress, fetchMintConfiguration, checkEligibility])
 
-  useEffect(() => {
-    if(!mintResult && walletAddress) {
-      const existingMintResults = getMintResultsLS();
-      if(existingMintResults.length === 0) return;
-
-      const restoredMintForWallet = existingMintResults.find((existing) => 
-        existing.walletAddress.toLowerCase() === walletAddress.toLowerCase())
-
-      if(restoredMintForWallet) {
-        console.log('restoring mint result from localstorage', restoredMintForWallet)
-        // current wallet address matches previous mint result in localstorage
-        setMintResult(restoredMintForWallet)
-      }
-    }
-  }, [mintResult, walletAddress])
-
-  // Edge case for when changing wallet addresses
-  useEffect(() => {
-    if(!walletAddress) setMintResult(null);
-  }, [walletAddress])
-
   return (
     <Card minW="xs" w={["100%", "430px"]} bgColor={'rgba(0,0,0,0.75)'}>
       <CardBody>
@@ -181,26 +167,30 @@ export function FreeMint() {
             alt="Example Image" 
             width={["250px", "300px"]}
             />
-          {(!mintConfigLoading && mintConfigResult) && <MintPhaseDetails mintPhases={mintConfigResult.mintPhases} />}
+          {(!mintConfigLoading && mintConfigResult) && (<>
+              <Heading size="md">Total minted: {mintConfigResult.totalMintedAcrossAllPhases ?? 0} / {mintConfigResult.maxTokenSupplyAcrossAllPhases}</Heading>
+              <MintPhaseDetails mintPhases={mintConfigResult.mintPhases} />
+            </>
+          )}
         </VStack>
       </CardBody>
       <CardFooter display={"flex"} flexDirection={"column"}>
           {(!walletAddress || !provider) && <Button variant="solid" colorScheme='blue' onClick={() => openWidget(WidgetType.CONNECT)}>Connect Wallet</Button>}
-          {(walletAddress && provider && eligibilityResult && !eligibilityLoading && !mintResult) && (
+          {(walletAddress && provider && eligibilityResult && !eligibilityLoading && !mintId) && (
             <Button 
             variant="solid" 
             colorScheme="blue" 
             isDisabled={!eligiblityActivePhase 
               || !eligiblityActivePhase.isAllowListed
               || mintLoading 
-              || Boolean(mintResult)
+              || Boolean(mintId)
             }
             onClick={mintButton}
             >
               Mint
             </Button>
           )}
-          {mintResult && walletAddress && <MintStatus mint={mintResult} walletAddress={walletAddress} />}
+          {mintId && walletAddress && <MintStatus mintId={mintId} walletAddress={walletAddress} />}
       </CardFooter>
     </Card>
   );

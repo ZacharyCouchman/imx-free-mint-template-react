@@ -15,7 +15,7 @@ export const MintPhaseDetails = ({ mintPhases }: MintPhaseDetails) => {
   const hasNextPhase = currentMintPhase !== -1 && currentMintPhase < mintPhases.length -1;
 
   return (
-    <VStack paddingY={4}>
+    <VStack>
       {isPreMint && <Countdown endTime={mintPhases[0].startTime} deadlineEventTopic="countdownMintPhase" />}
       {!isPreMint && (
       <>

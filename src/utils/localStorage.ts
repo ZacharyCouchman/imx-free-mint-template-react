@@ -34,7 +34,7 @@ export function updateMintResultLS(mint: Mint, status: string) {
   } else {
     // update at id
     updatedMintResults = existingMintResults;
-    updatedMintResults.splice(matchedMintIndex, 1, { ...mint, status })
+    updatedMintResults.splice(matchedMintIndex, 1, { ...updatedMintResults[matchedMintIndex], ...mint, status })
   }
 
   // set

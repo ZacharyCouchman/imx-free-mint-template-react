@@ -1,6 +1,8 @@
 export interface EligibilityResult {
   chainName: string;
   collectionAddress: string;
+  maxTokenSupplyAcrossAllPhases: number;
+  hasMinted: null;
   mintPhases: MintPhase[];
 }
 
