@@ -1,8 +1,11 @@
-# Immutable Passport Sample React
+# Immutable Free Mint Sample Frontend
 
-This example shows how to get started with using Immutable Passport in your web project.
+This example shows how to use a frontend website with the free mint backend tooling example code.
+This code uses Immutable Passport and Immutable Checkout - Connect Widget
 
 [Documentation for Immutable Passport](https://docs.immutable.com/docs/zkEVM/products/passport)
+
+This code is intended to be run with the minting-api-backend code found here: https://github.com/danekshea/minting-api-backend
 
 ## Get Started
 
@@ -17,6 +20,7 @@ npm i
 
 Rename .env.example to .env, replace all of the variables with your own project variables from https://hub.immutable.com
 
+After starting the backend code, update the VITE_MINTING_BACKEND_API_BASE_URL to point to where your backend server is hosted.
 
 ## Start
 
