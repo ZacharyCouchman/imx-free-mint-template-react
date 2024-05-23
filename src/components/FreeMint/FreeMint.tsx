@@ -167,7 +167,7 @@ export function FreeMint() {
         <VStack mt="6" gap={4} alignItems={"center"}>
           <Heading size="lg">Free Mint Pass</Heading>
           <Text>Mint your free pass for exclusive access and rewards</Text>
-          <ChakraImage src="https://emerald-variable-swallow-254.mypinata.cloud/ipfs/QmNYn1DS9djwCLCcu7Pyrb6uUtGzf29AH6cBcXAncELeik/1.png" alt="Example Image" width={["250px", "300px"]} />
+          <ChakraImage src="https://raw.githubusercontent.com/ZacharyCouchman/imx-free-mint-template-react/7ab06404c8621c293475b573b991cc140bab2928/public/devdosomething.png" alt="Example Image" width={["250px", "300px"]} />
           {!mintConfigLoading && mintConfigResult && (
             <>
               <Heading size="md">
