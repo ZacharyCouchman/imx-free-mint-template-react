@@ -1,28 +1,38 @@
 # Immutable Free Mint Sample Frontend
 
-This example shows how to use a frontend website with the free mint backend tooling example code.
-This code uses Immutable Passport and Immutable Checkout - Connect Widget
+This code example shows how to conduct a free mint using a frontend website with the free mint backend tooling example code.
+The front end code uses Immutable Passport and Immutable Checkout - Connect Widget for connecting wallets to the dapp. The backend code will use Immutable's Minting API to provide gas-free minting of NFTs to your users.
 
-[Documentation for Immutable Passport](https://docs.immutable.com/docs/zkEVM/products/passport)
+This front end code is intended to be run with the minting-api-backend code found here: https://github.com/danekshea/minting-api-backend
 
-This code is intended to be run with the minting-api-backend code found here: https://github.com/danekshea/minting-api-backend
+## Diagram
+
+<img src="./free-mint-diagram.png">
 
 ## Get Started
 
-Install the latest version of the @imtbl/sdk.
+Using Node v18+ and npm v10+, install the latest version of the @imtbl/sdk and then the rest of the dependencies.
 
 ```bash
-npm install @imtbl/sdk
-npm i
+npm i @imtbl/sdk && npm i
 ```
 
-## Add configuration
+## Configuring the application
 
-Rename .env.example to .env, replace all of the variables with your own project variables from https://hub.immutable.com
+Before running the application there is some configuration that you will need to add:
+1. Copy the .env.example file and rename the copy to .env
+2. Go to the [Immutable Hub](https://hub.immutable.com) and for your specific project select the environment that you want to use (sandbox - testnet or production - mainnet), and add the following to your .env file:
+    1. Your publishable key from the API Keys section. Publishable key starts with `pk_`
+    2. Create a Passport web client (if you haven't already) and get the Passport Client ID
+    3. Set up a login redirect route for Passport (default for running locally is `http://localhost:5174/passport-redirect`)
+    4. Set up a logoout redirect route for Passport (default for running locally is `http://localhost:5174/`)
+3. Add the minting-api-backend base url to the .env file found from running the backend code. (default for running locally is `http://localhost:3000`).
+4. Note: when running this against Immutable zkEVM Mainnet, you will need to create a Passport Client in the Hub for the production environment of your project and also set the VITE_IMMUTABLE_ENVIRONMENT variable to `production`
+
 
 After starting the backend code, update the VITE_MINTING_BACKEND_API_BASE_URL to point to where your backend server is hosted.
 
-## Start
+## Run locally
 
 `npm run dev`
 
@@ -37,37 +47,6 @@ In order to build for production, a package `jsbi` had to be installed to suppor
 ## Deployment in Vercel
 
 A `vercel.json` file has been added to help configure for deployments in Vercel. This is not neccessary if you are not deploying to Vercel. It is re-writing all routes back to the index.html file to make the React Router work correctly.
-
-## Vite details
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: "latest",
-    sourceType: "module",
-    project: ["./tsconfig.json", "./tsconfig.node.json"],
-    tsconfigRootDir: __dirname,
-  },
-};
-```
-
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
 
 ## UI Kit: Chakra UI
 

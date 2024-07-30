@@ -22,7 +22,7 @@ export const MintStatus = ({ mintId, walletAddress }: MintStatus) => {
     const checkMintStatus = async (uuid: string) => {
       const result: MintRequestByIDResult = await mintRequestById(uuid);
       
-      if(mintStatusRequestCount.current === 4) {
+      if(mintStatusRequestCount.current === 10) {
         // if we get to here, stop trying.
         setMintStatusFailed(true);
         return;
@@ -30,7 +30,7 @@ export const MintStatus = ({ mintId, walletAddress }: MintStatus) => {
 
       if(result.result[0].status === "pending") {
         mintStatusRequestCount.current++;
-        setTimeout(async () => await checkMintStatus(mintId), 4000 * mintStatusRequestCount.current);
+        setTimeout(async () => await checkMintStatus(mintId), 2000 * mintStatusRequestCount.current);
         return;
       }
 
@@ -41,8 +41,8 @@ export const MintStatus = ({ mintId, walletAddress }: MintStatus) => {
     }
 
     if(mintId) {
-      // start polling from mint uuid
-      setTimeout(async() => await checkMintStatus(mintId), 10000);
+      // start polling for mint uuid in 5 seconds
+      setTimeout(async() => await checkMintStatus(mintId), 5000);
     }
   }, [mintId])
 
@@ -51,7 +51,7 @@ export const MintStatus = ({ mintId, walletAddress }: MintStatus) => {
       {!mintSucceeded && (
         <VStack gap={2} alignItems={'center'}>
           <Text>Mint request receieved. Please be patient. Checking your mint status in: </Text>
-          <Countdown size='md' endTime={(Date.now() + 10000)/1000} deadlineEventTopic='countdownMintStatus' />
+          <Countdown size='md' endTime={(Date.now() + 20000)/1000} deadlineEventTopic='countdownMintStatus' />
         </VStack>
       )}
       {!mintStatusFailed && mintSucceeded && (
